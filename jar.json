@@ -1,0 +1,11 @@
+{
+
+  "build": {
+    "type": "maven",
+    "goal": "package"
+  },
+  "deploy": {
+    "jarName": "target/quarkus-app/quarkus-run.jar"
+  }
+
+}
