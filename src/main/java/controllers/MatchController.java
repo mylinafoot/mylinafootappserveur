@@ -1,0 +1,120 @@
+package controllers;
+
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import models.Equipe;
+import models.Match;
+
+import java.util.*;
+
+@Path("match")
+public class MatchController {
+    //
+    @GET
+    @Path("All/{saison}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllMatchsDeLaSaison(@PathParam("saison") String saison) {
+        List<Match> matches = Match.find("saison",saison).list();
+
+        return Response.ok(matches).build();
+    }
+    //
+
+    @GET
+    @Path("All/journee/{idCalendrier}/{categorie}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllJourneeDeLaSaison(
+            @PathParam("idCalendrier") Long idCalendrier,
+                                            @PathParam("categorie") String categorie) {
+
+        HashMap params = new HashMap();
+        params.put("idCalendrier",idCalendrier);
+        params.put("categorie",categorie);
+
+        List<Match> matches = Match.find("idCalendrier =: idCalendrier and categorie =: categorie",params).list();
+        Set<Integer> journees = new HashSet<>();
+        //
+        matches.forEach((e)->{
+            //
+            journees.add(e.journee);
+        });
+
+        return Response.ok(journees).build();
+    }
+    //
+
+    @GET
+    @Path("All/match/{idCalendrier}/{categorie}/{journee}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllMatchsDeLaJournee(@PathParam("idCalendrier") Long idCalendrier,
+                                            @PathParam("categorie") String categorie,
+                                            @PathParam("journee") String journee) {
+
+        HashMap params = new HashMap();
+        params.put("idCalendrier",idCalendrier);
+        params.put("categorie",categorie);
+        params.put("journee",journee);
+
+        List<Match> matches = Match.find("idCalendrier =: idCalendrier and categorie =: categorie and journee =: journee",params).list();
+
+        matches.forEach((m)->{
+            //
+            System.out.println("Match: "+m.journee);
+        });
+
+        return Response.ok(matches).build();
+    }
+    //
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response saveEquipe(Match match) {
+        match.persist();
+        return Response.ok(match).build();
+    }
+    //
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response updateEquipe(Match match) {
+        Match match1 = Match.findById(match.id);
+        if(match1 == null){
+            return  Response.status(404).build();
+        }
+
+        match1.stade = match.stade;
+        match1.terrainNeutre = match.terrainNeutre;
+        match1.quiRecoit = match.quiRecoit;
+        match1.date = match.date;
+        match1.heure = match.heure;
+        match1.commissaire = match.commissaire;
+        match1.arbitreCentrale = match.arbitreCentrale;
+        match1.arbitreAssitant1 = match.arbitreAssitant1;
+        match1.arbitreAssitant2 = match.arbitreAssitant2;
+        match1.arbitreProtocolaire = match.arbitreProtocolaire;
+        match1.nombreDePlaces = match.nombreDePlaces;
+        match1.officierRapporteur = match.officierRapporteur;
+        //
+        return Response.ok(match1).build();
+        //
+    }
+
+    //
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response removeEquipe(@QueryParam("id") Long id) {
+        System.out.println("Je supprime le truc: "+id);
+        Match.deleteById(id);
+        return Response.ok().build();
+    }
+    //
+
+
+    //
+}
