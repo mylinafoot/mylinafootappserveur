@@ -6,7 +6,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.Arbitre;
 import models.Commissaire;
+import models.Match;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,6 +40,142 @@ public class ArbitreController {
 
         return Response.ok(arbitres1).build();
     }
+    //
+    @GET
+    @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOne(@QueryParam("telephone") String telephone, @QueryParam("mdp") String mdp
+            , @QueryParam("date") String date, @QueryParam("mdpArbitreCentrale") String mdpArbitreCentrale) {
+
+        //
+        System.out.println("telephone: "+telephone+" : mdpp: "+mdp);
+        //
+        HashMap params = new HashMap();
+        params.put("telephone",telephone);
+        params.put("mdp",mdp);
+        //
+        Arbitre arbitre = (Arbitre) Arbitre.find("telephone =: telephone and mdp =: mdp",params).firstResult();
+        //
+        if (arbitre != null) {
+
+            //
+            System.out.println("arbitre: " + arbitre.telephone + " : id: " + arbitre.id);
+            //
+            HashMap params2 = new HashMap();
+            params2.put("arbitreCentrale", arbitre.id);
+            params2.put("mdpArbitreCentrale",mdpArbitreCentrale);
+            params2.put("jouer", false);
+            // and date =: date
+            List<Match> matchs = Match.find("arbitreCentrale =: arbitreCentrale and mdpArbitreCentrale =: mdpArbitreCentrale and jouer =: jouer", params2).list();
+            //
+            List<HashMap<String, Object>> responses = new LinkedList<>();
+            matchs.forEach((match) -> {
+                HashMap<String, Object> reponse = new HashMap();
+                if (match != null) {
+                    //
+                    reponse.put("commissaire", match.commissaire);
+                    reponse.put("match", match.id);
+                    reponse.put("idCalendrier", match.idCalendrier);
+                    reponse.put("idEquipeA", match.idEquipeA);
+                    reponse.put("nomEquipeA", match.nomEquipeA);
+                    reponse.put("idEquipeB", match.idEquipeB);
+                    reponse.put("nomEquipeB", match.nomEquipeB);
+                    reponse.put("stade", match.stade);
+                    reponse.put("terrainNeutre", match.terrainNeutre);
+                    reponse.put("quiRecoit", match.quiRecoit);
+                    reponse.put("saison", match.saison);
+                    reponse.put("categorie", match.categorie);
+                    reponse.put("journee", match.journee);
+                    reponse.put("date", match.date);
+                    reponse.put("heure", match.heure);
+                    reponse.put("arbitreCentrale", arbitre.id);
+                    reponse.put("arbitreAssitant1", match.arbitreAssitant1);
+                    reponse.put("arbitreAssitant2", match.arbitreAssitant2);
+                    reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
+                    reponse.put("officierRapporteur", match.officierRapporteur);
+                    reponse.put("nombreDePlaces", match.nombreDePlaces);
+                    reponse.put("typeRapport", 1);
+                    reponse.put("jouer", match.jouer);
+                    //
+                    responses.add(reponse);
+                }
+            });
+            return Response.ok(responses).build();
+        }else{
+            return Response.status(404).build();
+        }
+
+
+    }
+    //
+    @GET
+    @Path("loginofficier")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOneOfficier(@QueryParam("telephone") String telephone, @QueryParam("mdp") String mdp
+            , @QueryParam("date") String date, @QueryParam("mdpOfficier") String mdpOfficier) {
+
+        //
+        System.out.println("telephone: "+telephone+" : mdpp: "+mdp);
+        //
+        HashMap params = new HashMap();
+        params.put("telephone",telephone);
+        params.put("mdp",mdp);
+        //
+        Arbitre arbitre = (Arbitre) Arbitre.find("telephone =: telephone and mdp =: mdp",params).firstResult();
+        //
+        if (arbitre != null) {
+
+            //
+            System.out.println("arbitre: " + arbitre.telephone + " : id: " + arbitre.id);
+            //
+            HashMap params2 = new HashMap();
+            params2.put("arbitreProtocolaire", arbitre.id);
+            params2.put("mdpOfficier",mdpOfficier);
+            params2.put("jouer", false);
+            // and date =: date
+            List<Match> matchs = Match.find("arbitreProtocolaire =: arbitreProtocolaire and mdpOfficier =: mdpOfficier and jouer =: jouer", params2).list();
+            //
+            List<HashMap<String, Object>> responses = new LinkedList<>();
+            matchs.forEach((match) -> {
+                HashMap<String, Object> reponse = new HashMap();
+                if (match != null) {
+                    //
+                    reponse.put("commissaire", match.commissaire);
+                    reponse.put("match", match.id);
+                    reponse.put("idCalendrier", match.idCalendrier);
+                    reponse.put("idEquipeA", match.idEquipeA);
+                    reponse.put("nomEquipeA", match.nomEquipeA);
+                    reponse.put("idEquipeB", match.idEquipeB);
+                    reponse.put("nomEquipeB", match.nomEquipeB);
+                    reponse.put("stade", match.stade);
+                    reponse.put("terrainNeutre", match.terrainNeutre);
+                    reponse.put("quiRecoit", match.quiRecoit);
+                    reponse.put("saison", match.saison);
+                    reponse.put("categorie", match.categorie);
+                    reponse.put("journee", match.journee);
+                    reponse.put("date", match.date);
+                    reponse.put("heure", match.heure);
+                    reponse.put("arbitreCentrale", arbitre.id);
+                    reponse.put("arbitreAssitant1", match.arbitreAssitant1);
+                    reponse.put("arbitreAssitant2", match.arbitreAssitant2);
+                    reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
+                    reponse.put("officierRapporteur", match.officierRapporteur);
+                    reponse.put("nombreDePlaces", match.nombreDePlaces);
+                    reponse.put("typeRapport", 1);
+                    reponse.put("jouer", match.jouer);
+                    //
+                    responses.add(reponse);
+                }
+            });
+            return Response.ok(responses).build();
+        }else{
+            return Response.status(404).build();
+        }
+
+
+    }
+    //
+
     //
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -44,7 +44,7 @@ public class CommissaireController {
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOne(@QueryParam("telephone") String telephone, @QueryParam("mdp") String mdp
-            , @QueryParam("date") String date) {
+            , @QueryParam("date") String date, @QueryParam("mdpCommissaire") String mdpCommissaire) {
 
         //
         System.out.println("telephone: "+telephone+" : mdp: "+mdp);
@@ -55,49 +55,54 @@ public class CommissaireController {
         //
         Commissaire commissaire = (Commissaire) Commissaire.find("telephone =: telephone and mdp =: mdp",params).firstResult();
         //
-        System.out.println("commissaire: "+commissaire.telephone+" : date: "+date);
-        //
-        HashMap params2 = new HashMap();
-        params2.put("commissaire",commissaire.id);
-        //params2.put("date",date);
-        params2.put("jouer",false);
-        // and date =: date
-        List<Match> matchs = Match.find("commissaire =: commissaire and jouer =: jouer",params2).list();
-        //
-        List<HashMap<String, Object>> responses = new LinkedList<>();
-        matchs.forEach((match)->{
-            HashMap<String, Object> reponse = new HashMap();
-            if (match != null) {
+        if(commissaire != null){
             //
-            reponse.put("commissaire", commissaire.id);
-            reponse.put("match", match.id);
-            reponse.put("idCalendrier", match.idCalendrier);
-            reponse.put("idEquipeA", match.idEquipeA);
-            reponse.put("nomEquipeA", match.nomEquipeA);
-            reponse.put("idEquipeB", match.idEquipeB);
-            reponse.put("nomEquipeB", match.nomEquipeB);
-            reponse.put("stade", match.stade);
-            reponse.put("terrainNeutre", match.terrainNeutre);
-            reponse.put("quiRecoit", match.quiRecoit);
-            reponse.put("saison", match.saison);
-            reponse.put("categorie", match.categorie);
-            reponse.put("journee", match.journee);
-            reponse.put("date", match.date);
-            reponse.put("heure", match.heure);
-            reponse.put("arbitreCentrale", match.arbitreCentrale);
-            reponse.put("arbitreAssitant1", match.arbitreAssitant1);
-            reponse.put("arbitreAssitant2", match.arbitreAssitant2);
-            reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
-            reponse.put("officierRapporteur", match.officierRapporteur);
-            reponse.put("nombreDePlaces", match.nombreDePlaces);
-            reponse.put("typeRapport", 1);
-            reponse.put("jouer", match.jouer);
+            System.out.println("commissaire: "+commissaire.telephone+" : date: "+date);
             //
-            responses.add(reponse);
-        }
-        });
+            HashMap params2 = new HashMap();
+            params2.put("commissaire",commissaire.id);
+            params2.put("mdpCommissaire",mdpCommissaire);
+            params2.put("jouer",false);
+            // and date =: date
+            List<Match> matchs = Match.find("commissaire =: commissaire and mdpCommissaire =: mdpCommissaire and jouer =: jouer",params2).list();
+            //
+            List<HashMap<String, Object>> responses = new LinkedList<>();
+            matchs.forEach((match)->{
+                HashMap<String, Object> reponse = new HashMap();
+                if (match != null) {
+                //
+                reponse.put("commissaire", commissaire.id);
+                reponse.put("match", match.id);
+                reponse.put("idCalendrier", match.idCalendrier);
+                reponse.put("idEquipeA", match.idEquipeA);
+                reponse.put("nomEquipeA", match.nomEquipeA);
+                reponse.put("idEquipeB", match.idEquipeB);
+                reponse.put("nomEquipeB", match.nomEquipeB);
+                reponse.put("stade", match.stade);
+                reponse.put("terrainNeutre", match.terrainNeutre);
+                reponse.put("quiRecoit", match.quiRecoit);
+                reponse.put("saison", match.saison);
+                reponse.put("categorie", match.categorie);
+                reponse.put("journee", match.journee);
+                reponse.put("date", match.date);
+                reponse.put("heure", match.heure);
+                reponse.put("arbitreCentrale", match.arbitreCentrale);
+                reponse.put("arbitreAssitant1", match.arbitreAssitant1);
+                reponse.put("arbitreAssitant2", match.arbitreAssitant2);
+                reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
+                reponse.put("officierRapporteur", match.officierRapporteur);
+                reponse.put("nombreDePlaces", match.nombreDePlaces);
+                reponse.put("typeRapport", 1);
+                reponse.put("jouer", match.jouer);
+                //
+                responses.add(reponse);
+            }
+            });
 
-        return Response.ok(responses).build();
+            return Response.ok(responses).build();
+        }else{
+            return Response.status(404).build();
+        }
     }
     //
     @POST

@@ -21,11 +21,14 @@ public class Match extends PanacheEntity {
     public String date;
     public String heure;
     public Long commissaire;
+    public String mdpCommissaire;
     public Long arbitreCentrale;
+    public String mdpArbitreCentrale;
     public Long arbitreAssitant1;
     public Long arbitreAssitant2;
     public Long arbitreProtocolaire;
     public Long officierRapporteur;
+    public String mdpOfficier;
     public int nombreDePlaces;
     @Column(columnDefinition = "boolean default false")
     public boolean jouer;

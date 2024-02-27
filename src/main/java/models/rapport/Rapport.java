@@ -1,8 +1,12 @@
 package models.rapport;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
+
 import java.util.HashMap;
 
-public class Rapport {
+@Entity
+public class Rapport extends PanacheEntity {
     public Long idMatch;
     public Long idCalendrier;
     public Long idEquipeA;
@@ -24,6 +28,6 @@ public class Rapport {
     public Long arbitreProtocolaire;
     public int nombreDePlaces;
     public boolean jouer;
-    public boolean typeRapport;
+    public int typeRapport;
     public HashMap rapport;
 }
