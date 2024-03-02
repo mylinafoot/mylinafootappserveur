@@ -45,6 +45,17 @@ public class EquipeController {
         equipe.persist();
         return Response.ok(equipe).build();
     }
+
+    @POST
+    @Path("saveall")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response saveEquipe(List<Equipe> equipes) {
+        equipes.forEach((equipe -> equipe.persist()));
+        //equipe.persist();
+        return Response.ok("ok").build();
+    }
     //
     @PUT
     @Produces(MediaType.APPLICATION_JSON)

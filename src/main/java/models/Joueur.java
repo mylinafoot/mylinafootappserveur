@@ -13,9 +13,6 @@ public class Joueur extends PanacheEntity {
     public String postnom;
     public String prenom;
     public String dateNaissance;
-    public String telephone;
-    public String email;
-    public String adresse;
     public String licence;
     public String numero;
 }

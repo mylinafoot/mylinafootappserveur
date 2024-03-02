@@ -30,6 +30,28 @@ public class Match extends PanacheEntity {
     public Long officierRapporteur;
     public String mdpOfficier;
     public int nombreDePlaces;
+    @Column(columnDefinition = "Integer default '0'")
+    public int nombreDePlacesPourtour = 0;
+    @Column(columnDefinition = "Integer default '0'")
+    public int nombreDePlacesTribuneCentrale = 0;
+    @Column(columnDefinition = "Integer default '0'")
+    public int nombreDePlacesTribuneHonneur = 0;
+    @Column(columnDefinition = "Integer default '0'")
+    public int nombreDePlacesTribuneLateralle = 0;
     @Column(columnDefinition = "boolean default false")
     public boolean jouer;
+    //
+    @Column(columnDefinition = "Decimal default 0.00")
+    public double prixPourtour;
+    @Column(columnDefinition = "Decimal default 0.00")
+    public double prixTribuneLateralle;
+    @Column(columnDefinition = "Decimal default 0.00")
+    public double prixTribuneHonneur;
+    @Column(columnDefinition = "Decimal default 0.00")
+    public double prixTribuneCentrale;
+    @Column(columnDefinition = "Boolean default true")
+    public boolean prevente;
+    @Column(columnDefinition = "Boolean default true")
+    public boolean envente;
+
 }

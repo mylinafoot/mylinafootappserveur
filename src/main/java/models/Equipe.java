@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 @Entity
 public class Equipe extends PanacheEntity {
     public String nom;
+    public String abrev;
     public String province;
     public byte[] logo;
     public String dateCreation;

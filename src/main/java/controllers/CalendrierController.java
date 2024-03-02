@@ -21,6 +21,15 @@ public class CalendrierController {
 
         return Response.ok(calendriers).build();
     }
+
+    @GET
+    @Path("actuel")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getActuel() {
+        List<Calendrier> calendriers = Calendrier.listAll();
+        var c = calendriers.get(0);
+        return Response.ok(c.id).build();
+    }
     //
     @POST
     @Produces(MediaType.APPLICATION_JSON)

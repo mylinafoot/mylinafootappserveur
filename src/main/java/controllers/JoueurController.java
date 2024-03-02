@@ -49,9 +49,9 @@ public class JoueurController {
         joueur1.nom = joueur.nom;
         joueur1.postnom = joueur.postnom;
         joueur1.prenom = joueur.prenom;
-        joueur1.email = joueur.email;
-        joueur1.telephone = joueur.telephone;
-        joueur1.adresse = joueur.adresse;
+        //joueur1//.email = joueur.email;
+        //joueur1.telephone = joueur.telephone;
+        //joueur1.adresse = joueur.adresse;
         joueur1.idEquipe = joueur.idEquipe;
         joueur1.dateNaissance = joueur.dateNaissance;
         joueur1.licence = joueur.licence;
