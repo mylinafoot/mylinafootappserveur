@@ -95,6 +95,17 @@ public class JoueurController {
         Joueur.deleteById(id);
         return Response.ok().build();
     }
+
+    //
+    @DELETE
+    @Path("joueurequipe")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response removeEquipeByEqId(@QueryParam("id") Long idEquipe) {
+        Joueur.delete("idEquipe",idEquipe);
+        return Response.ok().build();
+    }
+
     //
     @GET
     @Path("profile/{id}")
