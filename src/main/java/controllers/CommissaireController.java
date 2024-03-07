@@ -154,6 +154,17 @@ public class CommissaireController {
     }
     //
 
+    //
+    @DELETE
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response deleteCommissaire() {
+        //
+        Commissaire.deleteAll();
+        return Response.ok().build();
+    }
+
     @GET
     @Path("photo/{id}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
