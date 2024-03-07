@@ -137,7 +137,16 @@ public class MatchController {
         return Response.ok().build();
     }
     //
-
+    @DELETE
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response removeEquipeAll() {
+        Match.deleteAll();
+        return Response.ok().build();
+    }
+    //
 
     //
 }
