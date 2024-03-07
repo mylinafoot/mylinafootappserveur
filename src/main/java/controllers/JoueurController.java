@@ -36,6 +36,18 @@ public class JoueurController {
         joueur.persist();
         return Response.ok(joueur).build();
     }
+
+    @POST
+    @Path("saveall")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response saveEquipe(List<Joueur> joueurs) {
+        joueurs.forEach((joueur -> joueur.persist()));
+        //equipe.persist();
+        return Response.ok("ok").build();
+    }
+    //
     //
     @PUT
     @Produces(MediaType.APPLICATION_JSON)

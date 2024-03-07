@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import models.Commissaire;
 import models.Match;
 import models.rapport.Rapport;
 
@@ -117,10 +118,12 @@ public class RapportController {
             if(rapport.typeRapport == 1){
                 //
                 match.mdpCommissaire = "";
-            } else if (rapport.typeRapport == 2) {
+            }
+                if (rapport.typeRapport == 2) {
                 //
                 match.mdpArbitreCentrale = "";
-            }else{
+            }
+                if (rapport.typeRapport == 3) {
                 //
                 match.mdpOfficier = "";
             }
@@ -136,4 +139,11 @@ public class RapportController {
         return Response.ok().build();
     }
     //
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response LogoEquipe(@QueryParam("id") Long id) {
+        Rapport.deleteById(id);
+        return Response.ok().build();
+    }
 }

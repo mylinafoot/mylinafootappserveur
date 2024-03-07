@@ -44,30 +44,16 @@ public class ArbitreController {
     @GET
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOne(@QueryParam("telephone") String telephone, @QueryParam("mdp") String mdp
-            , @QueryParam("date") String date, @QueryParam("mdpArbitreCentrale") String mdpArbitreCentrale) {
+    public Response getOne(@QueryParam("mdp") String mdp) {
 
-        //
-        System.out.println("telephone: "+telephone+" : mdpp: "+mdp);
         //
         HashMap params = new HashMap();
-        params.put("telephone",telephone);
-        params.put("mdp",mdp);
+        params.put("mdpArbitreCentrale",mdp);
         //
-        Arbitre arbitre = (Arbitre) Arbitre.find("telephone =: telephone and mdp =: mdp",params).firstResult();
-        //
-        if (arbitre != null) {
-
-            //
-            System.out.println("arbitre: " + arbitre.telephone + " : id: " + arbitre.id);
-            //
-            HashMap params2 = new HashMap();
-            params2.put("arbitreCentrale", arbitre.id);
-            params2.put("mdpArbitreCentrale",mdpArbitreCentrale);
-            params2.put("jouer", false);
             // and date =: date
-            List<Match> matchs = Match.find("arbitreCentrale =: arbitreCentrale and mdpArbitreCentrale =: mdpArbitreCentrale and jouer =: jouer", params2).list();
+            List<Match> matchs = Match.find("mdpArbitreCentrale =: mdpArbitreCentrale", params).list();
             //
+        if(!matchs.isEmpty() && matchs != null){
             List<HashMap<String, Object>> responses = new LinkedList<>();
             matchs.forEach((match) -> {
                 HashMap<String, Object> reponse = new HashMap();
@@ -88,13 +74,13 @@ public class ArbitreController {
                     reponse.put("journee", match.journee);
                     reponse.put("date", match.date);
                     reponse.put("heure", match.heure);
-                    reponse.put("arbitreCentrale", arbitre.id);
+                    reponse.put("arbitreCentrale", match.arbitreCentrale);
                     reponse.put("arbitreAssitant1", match.arbitreAssitant1);
                     reponse.put("arbitreAssitant2", match.arbitreAssitant2);
                     reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
                     reponse.put("officierRapporteur", match.officierRapporteur);
                     reponse.put("nombreDePlaces", match.nombreDePlaces);
-                    reponse.put("typeRapport", 1);
+                    reponse.put("typeRapport", 2);
                     reponse.put("jouer", match.jouer);
                     //
                     responses.add(reponse);
@@ -105,36 +91,26 @@ public class ArbitreController {
             return Response.status(404).build();
         }
 
-
     }
     //
     @GET
     @Path("loginofficier")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOneOfficier(@QueryParam("telephone") String telephone, @QueryParam("mdp") String mdp
-            , @QueryParam("date") String date, @QueryParam("mdpOfficier") String mdpOfficier) {
+    public Response getOneOfficier(@QueryParam("mdp") String mdp
+            ) {
 
         //
-        System.out.println("telephone: "+telephone+" : mdpp: "+mdp);
+        System.out.println("telephone: : mdpp: "+mdp);
         //
         HashMap params = new HashMap();
-        params.put("telephone",telephone);
-        params.put("mdp",mdp);
+        params.put("mdpOfficier",mdp);
         //
-        Arbitre arbitre = (Arbitre) Arbitre.find("telephone =: telephone and mdp =: mdp",params).firstResult();
+        //Arbitre arbitre = (Arbitre) Arbitre.find("telephone =: telephone and mdp =: mdp",params).firstResult();
         //
-        if (arbitre != null) {
-
-            //
-            System.out.println("arbitre: " + arbitre.telephone + " : id: " + arbitre.id);
-            //
-            HashMap params2 = new HashMap();
-            params2.put("arbitreProtocolaire", arbitre.id);
-            params2.put("mdpOfficier",mdpOfficier);
-            params2.put("jouer", false);
             // and date =: date
-            List<Match> matchs = Match.find("arbitreProtocolaire =: arbitreProtocolaire and mdpOfficier =: mdpOfficier and jouer =: jouer", params2).list();
+            List<Match> matchs = Match.find("mdpOfficier =: mdpOfficier", params).list();
             //
+        if(!matchs.isEmpty() && matchs != null){
             List<HashMap<String, Object>> responses = new LinkedList<>();
             matchs.forEach((match) -> {
                 HashMap<String, Object> reponse = new HashMap();
@@ -155,13 +131,13 @@ public class ArbitreController {
                     reponse.put("journee", match.journee);
                     reponse.put("date", match.date);
                     reponse.put("heure", match.heure);
-                    reponse.put("arbitreCentrale", arbitre.id);
+                    reponse.put("arbitreCentrale", match.arbitreCentrale);
                     reponse.put("arbitreAssitant1", match.arbitreAssitant1);
                     reponse.put("arbitreAssitant2", match.arbitreAssitant2);
                     reponse.put("arbitreProtocolaire", match.arbitreProtocolaire);
                     reponse.put("officierRapporteur", match.officierRapporteur);
                     reponse.put("nombreDePlaces", match.nombreDePlaces);
-                    reponse.put("typeRapport", 1);
+                    reponse.put("typeRapport", 3);
                     reponse.put("jouer", match.jouer);
                     //
                     responses.add(reponse);
@@ -201,10 +177,9 @@ public class ArbitreController {
         //arbitre1.photo = arbitre.photo;
         //arbitre1.asPhoto = arbitre.asPhoto;
         arbitre1.telephone = arbitre.telephone;
-        arbitre1.telephone2 = arbitre.telephone2;
         arbitre1.email = arbitre.email;
         arbitre1.adresse = arbitre.adresse;
-        arbitre1.region = arbitre.region;
+        arbitre1.province = arbitre.province;
         arbitre1.categorie = arbitre.categorie;
         arbitre1.mdp = arbitre.mdp;
 

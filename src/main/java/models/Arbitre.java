@@ -11,10 +11,9 @@ public class Arbitre extends PanacheEntity {
     public String postnom;
     public String prenom;
     public String telephone;
-    public String telephone2;
     public String email;
     public String adresse;
-    public String region;
+    public String province;
     public String categorie;
     public String mdp;
 }
