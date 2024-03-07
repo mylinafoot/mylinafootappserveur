@@ -38,6 +38,9 @@ public class Match extends PanacheEntity {
     public int nombreDePlacesTribuneHonneur = 0;
     @Column(columnDefinition = "Integer default '0'")
     public int nombreDePlacesTribuneLateralle = 0;
+
+    @Column(columnDefinition = "Integer default '0'")
+    public int vip;
     @Column(columnDefinition = "boolean default false")
     public boolean jouer;
     //

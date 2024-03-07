@@ -21,6 +21,14 @@ public class MatchController {
         return Response.ok(matches).build();
     }
     //
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllMatchsDeLaSaison2(@PathParam("saison") String saison) {
+        List<Match> matches = Match.find("saison",saison).list();
+
+        return Response.ok(matches).build();
+    }
 
     @GET
     @Path("All/journee/{idCalendrier}/{categorie}")
@@ -98,6 +106,21 @@ public class MatchController {
         match1.arbitreProtocolaire = match.arbitreProtocolaire;
         match1.nombreDePlaces = match.nombreDePlaces;
         match1.officierRapporteur = match.officierRapporteur;
+        //
+        match1.mdpCommissaire = match.mdpCommissaire;
+        match1.mdpOfficier = match.mdpOfficier;
+        match1.mdpArbitreCentrale = match.mdpArbitreCentrale;
+        match1.vip = match.vip;
+        //
+        match1.nombreDePlacesTribuneCentrale = match.nombreDePlacesTribuneCentrale;
+        match1.nombreDePlacesPourtour = match.nombreDePlacesPourtour;
+        match1.nombreDePlacesTribuneLateralle = match.nombreDePlacesTribuneLateralle;
+        match1.nombreDePlacesTribuneHonneur = match.nombreDePlacesTribuneHonneur;
+        //
+        match1.prixPourtour = match.prixPourtour;
+        match1.prixTribuneCentrale = match.prixTribuneCentrale;
+        match1.prixTribuneHonneur = match.prixTribuneHonneur;
+        match1.prixTribuneLateralle = match.prixTribuneLateralle;
         //
         return Response.ok(match1).build();
         //
