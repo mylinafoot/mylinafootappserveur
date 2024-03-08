@@ -33,6 +33,8 @@ public class Match extends PanacheEntity {
     @Column(columnDefinition = "Integer default '0'")
     public int nombreDePlacesPourtour = 0;
     @Column(columnDefinition = "Integer default '0'")
+    public int nombreDePlacesVIP = 0;
+    @Column(columnDefinition = "Integer default '0'")
     public int nombreDePlacesTribuneCentrale = 0;
     @Column(columnDefinition = "Integer default '0'")
     public int nombreDePlacesTribuneHonneur = 0;
