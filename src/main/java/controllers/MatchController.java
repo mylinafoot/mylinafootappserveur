@@ -143,6 +143,7 @@ public class MatchController {
                 matchS.prixTribuneLateralle = (Double) match.get("prixTribuneLateralle").asDouble();
                 matchS.prixVIP = (Double) match.get("prixVIP").asDouble();
                 //System.out.println("Match: " + date);
+                matchS.persist();
             }
             /*
             matchs.forEach(match -> {
