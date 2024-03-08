@@ -44,14 +44,17 @@ public class Match extends PanacheEntity {
     @Column(columnDefinition = "boolean default false")
     public boolean jouer;
     //
-    @Column(columnDefinition = "Decimal default 0.0")
+    @Column(columnDefinition = "DOUBLE PRECISION DEFAULT 0.0")
     public double prixPourtour;
-    @Column(columnDefinition = "Decimal default 0.0")
+    @Column(columnDefinition = "DOUBLE PRECISION DEFAULT 0.0")
     public double prixTribuneLateralle;
-    @Column(columnDefinition = "Decimal default 0.0")
+    @Column(columnDefinition = "DOUBLE PRECISION DEFAULT 0.0")
     public double prixTribuneHonneur;
-    @Column(columnDefinition = "Decimal default 0.0")
+    @Column(columnDefinition = "DOUBLE PRECISION DEFAULT 0.0")
     public double prixTribuneCentrale;
+
+    @Column(columnDefinition = "DOUBLE PRECISION DEFAULT 0.0")
+    public double prixVIP;
     @Column(columnDefinition = "Boolean default true")
     public boolean prevente;
     @Column(columnDefinition = "Boolean default true")
