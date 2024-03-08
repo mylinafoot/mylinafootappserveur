@@ -99,6 +99,17 @@ public class MatchController {
         match.persist();
         return Response.ok(match).build();
     }
+
+    //
+    @POST
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response saveEquipeAll(List<Match> matchs) {
+        matchs.forEach(match -> match.persist());
+        return Response.ok(matchs).build();
+    }
     //
     @PUT
     @Produces(MediaType.APPLICATION_JSON)

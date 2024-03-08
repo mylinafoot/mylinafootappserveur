@@ -66,6 +66,20 @@ public class EquipeController {
     }
 
     @PUT
+    @Path("photo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response updateEquipePhoto(@QueryParam("id") Long id, byte[] photo) {
+        Equipe equipe1 = Equipe.findById(id);
+        if(equipe1 == null){
+            return  Response.status(404).build();
+        }
+        equipe1.logo = photo;
+
+        return Response.ok(equipe1).build();
+    }
+
+    @PUT
     @Path("logo")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
