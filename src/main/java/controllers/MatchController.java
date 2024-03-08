@@ -20,6 +20,21 @@ public class MatchController {
 
         return Response.ok(matches).build();
     }
+
+    @GET
+    @Path("allaffiches/{idCalendrier}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllAffiches(@PathParam("idCalendrier") Long idCalendrier) {
+        List<Match> matches = Match.find("idCalendrier",idCalendrier).list();
+        List<Match> matchess = new LinkedList<>();
+        matches.forEach(match -> {
+            if(match.afficher){
+                matchess.add(match);
+            }
+        });
+
+        return Response.ok(matchess).build();
+    }
     //
     @GET
     @Path("all")
