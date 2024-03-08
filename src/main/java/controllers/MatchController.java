@@ -131,7 +131,7 @@ public class MatchController {
                 Long arbitreAssitant1 = (Long) match.get("arbitreAssitant1").asLong();
                 Long arbitreAssitant2 = (Long) match.get("arbitreAssitant2").asLong();
                 Long arbitreProtocolaire = (Long) match.get("arbitreProtocolaire").asLong();
-                int nombreDePlaces = (Integer) match.get("nombreDePlaces").asInt();
+                //int nombreDePlaces = (Integer) match.get("nombreDePlaces").asInt();
                 int nombreDePlacesPourtour = (Integer) match.get("nombreDePlacesPourtour").asInt();
                 int nombreDePlacesTribuneCentrale = (Integer) match.get("nombreDePlacesTribuneCentrale").asInt();
                 int nombreDePlacesTribuneHonneur = (Integer) match.get("nombreDePlacesTribuneHonneur").asInt();
