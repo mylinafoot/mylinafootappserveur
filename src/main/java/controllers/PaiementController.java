@@ -110,11 +110,78 @@ public class PaiementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response saveDirect(HashMap direct) {
+    public Response saveDirect(HashMap billet) throws URISyntaxException, IOException, InterruptedException {
         //
-        //Unirest.setTimeouts(0, 0);
+        ObjectMapper obj = new ObjectMapper();
         //
-        return Response.ok().build();
+        String rep = verifOTP((String) billet.get("otp"), (String) billet.get("referencenumber"));
+        JsonNode jsonNode = obj.readTree(rep);
+        if(jsonNode.get("respcodedesc").asText().contains("Approuvé")) {
+            //Text a revoire
+            List<HashMap> billes = new LinkedList<>();
+            //
+            Long id = (Long) billet.get("id");
+            //
+            Match match = Match.findById(id);
+            //
+            for (int t = 0; t < (Integer) billet.get("nombrePlace"); t++) {
+                Billet bi = new Billet();
+                bi.idMatch = (Long) billet.get("id");
+                bi.qrCode = (String) billet.get("qrCode");
+                bi.typePlace = (String) billet.get("typePlace");
+                bi.journee = (String) billet.get("journee");
+                bi.nomEquipeA = (String) billet.get("nomEquipeA");
+                bi.nomEquipeB = (String) billet.get("nomEquipeB");
+                bi.date = (String) billet.get("date");
+                bi.heure = (String) billet.get("heure");
+                bi.stade = (String) billet.get("stade");
+                //----------------------------------------------------------------
+                if(billet.get("place").equals("Pourtour")){
+
+                    int nPlace = (Integer) billet.get("nombrePlace");
+
+                    match.nombreDePlacesPourtour = match.nombreDePlacesPourtour - nPlace;
+
+                }
+                if(billet.get("place").equals("Tribune Lateralle")){
+                    int nPlace = (Integer) billet.get("nombrePlace");
+
+                    //if(match.nombreDePlacesTribuneLateralle
+                    match.nombreDePlacesTribuneLateralle = match.nombreDePlacesTribuneLateralle - nPlace;
+
+                }
+                if(billet.get("place").equals("Tribune Honneur")){
+                    int nPlace = (Integer) billet.get("nombrePlace");
+
+                    //if(match.nombreDePlacesTribuneHonneur
+                    match.nombreDePlacesTribuneHonneur = match.nombreDePlacesTribuneHonneur - nPlace;
+
+                }
+                if(billet.get("place").equals("Tribune Centrale")){
+                    int nPlace = (Integer) billet.get("nombrePlace");
+
+                    //if(match.nombreDePlacesTribuneHonneur
+                    match.nombreDePlacesTribuneHonneur = match.nombreDePlacesTribuneHonneur - nPlace;
+
+                }
+                //----------------------------------------------------------------
+                //bi.qrCode = (String) billet.get("qrCode");
+                //bi.qrCode = (String) billet.get("qrCode");
+                //
+                bi.qrCode = bi.qrCode +t;
+                //
+                billet.put("qrCode",bi.qrCode);
+                //
+                bi.persist();
+                //
+                billes.add(billet);
+            }
+            //
+            return Response.ok(billes).build();
+        }else{
+            //
+            return Response.status(404).entity(rep).build();
+        }
     }
 
     @GET
