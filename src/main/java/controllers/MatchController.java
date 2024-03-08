@@ -13,10 +13,10 @@ import java.util.*;
 public class MatchController {
     //
     @GET
-    @Path("All/{saison}")
+    @Path("all/{idCalendrier}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllMatchsDeLaSaison(@PathParam("saison") String saison) {
-        List<Match> matches = Match.find("saison",saison).list();
+    public Response getAllMatchsDeLaSaison(@PathParam("idCalendrier") Long idCalendrier) {
+        List<Match> matches = Match.find("idCalendrier",idCalendrier).list();
 
         return Response.ok(matches).build();
     }
