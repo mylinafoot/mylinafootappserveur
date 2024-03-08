@@ -57,4 +57,7 @@ public class Match extends PanacheEntity {
     @Column(columnDefinition = "Boolean default true")
     public boolean envente;
 
+    @Column(columnDefinition = "Boolean default false")
+    public boolean afficher;
+
 }
