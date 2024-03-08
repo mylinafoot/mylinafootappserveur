@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -108,59 +110,45 @@ public class MatchController {
     @Transactional
     public Response saveEquipeAll(List<HashMap> matchs) {
         try {
-
-
-            matchs.forEach(match -> {
-                /**
-                 *
-                 "": 1,
-                 "": "playoff",
-                 "": "${x[9]}",
-                 "": "${d[0]}-${d[1]}-${d[2]}",
-                 "": "${x[6]}",
-                 "": matchController
-                 //""
-                 "":
-                 //"": place.value,
-                 "": "${x[10]}",
-                 "": "${x[16]}",
-                 "": "${x[14]}",
-                 "": "${x[12]}",
-                 "vip": "${x[18]}",
-                 //
-                 "": "${x[11]}",
-                 "": "${x[17]}",
-                 "": "${x[15]}",
-                 "": "${x[13]}",
-                 "": "${x[19]}"
-                 */
-                Long idCalendrier = (Long) match.get("idCalendrier");
-                Long idEquipeA = (Long) match.get("idEquipeA");
-                String nomEquipeA = (String) match.get("nomEquipeA");
-                Long idEquipeB = (Long) match.get("idEquipeB");
-                String nomEquipeB = (String) match.get("nomEquipeB");
-                String stade = (String) match.get("stade");
-                String categorie = (String) match.get("categorie");
-                int journee = (Integer) match.get("journee");
-                String date = (String) match.get("date");
-                String heure = (String) match.get("heure");
-                Long commissaire = (Long) match.get("commissaire");
-                Long arbitreCentrale = (Long) match.get("arbitreCentrale");
-                Long arbitreAssitant1 = (Long) match.get("arbitreAssitant1");
-                Long arbitreAssitant2 = (Long) match.get("arbitreAssitant2");
-                Long arbitreProtocolaire = (Long) match.get("arbitreProtocolaire");
-                int nombreDePlaces = (Integer) match.get("nombreDePlaces");
-                int nombreDePlacesPourtour = (Integer) match.get("nombreDePlacesPourtour");
-                int nombreDePlacesTribuneCentrale = (Integer) match.get("nombreDePlacesTribuneCentrale");
-                int nombreDePlacesTribuneHonneur = (Integer) match.get("nombreDePlacesTribuneHonneur");
-                int nombreDePlacesTribuneLateralle = (Integer) match.get("nombreDePlacesTribuneLateralle");
-                Double prixPourtour = (Double) match.get("prixPourtour");
-                Double prixTribuneCentrale = (Double) match.get("prixTribuneCentrale");
-                Double prixTribuneHonneur = (Double) match.get("prixTribuneHonneur");
-                Double prixTribuneLateralle = (Double) match.get("prixTribuneLateralle");
-                Double prixVIP = (Double) match.get("prixVIP");
+            ObjectMapper objectMapper = new ObjectMapper();
+            String mt = objectMapper.writeValueAsString(matchs);
+            JsonNode js = objectMapper.readTree(mt);
+            Iterator iterator = js.iterator();
+            while (iterator.hasNext()){
+                JsonNode match = (JsonNode) iterator.next();
+                Long idCalendrier = (Long) match.get("idCalendrier").asLong();
+                Long idEquipeA = (Long) match.get("idEquipeA").asLong();
+                String nomEquipeA = (String) match.get("nomEquipeA").asText();
+                Long idEquipeB = (Long) match.get("idEquipeB").asLong();
+                String nomEquipeB = (String) match.get("nomEquipeB").asText();
+                String stade = (String) match.get("stade").asText();
+                String categorie = (String) match.get("categorie").asText();
+                int journee = (Integer) match.get("journee").asInt();
+                String date = (String) match.get("date").asText();
+                String heure = (String) match.get("heure").asText();
+                Long commissaire = (Long) match.get("commissaire").asLong();
+                Long arbitreCentrale = (Long) match.get("arbitreCentrale").asLong();
+                Long arbitreAssitant1 = (Long) match.get("arbitreAssitant1").asLong();
+                Long arbitreAssitant2 = (Long) match.get("arbitreAssitant2").asLong();
+                Long arbitreProtocolaire = (Long) match.get("arbitreProtocolaire").asLong();
+                int nombreDePlaces = (Integer) match.get("nombreDePlaces").asInt();
+                int nombreDePlacesPourtour = (Integer) match.get("nombreDePlacesPourtour").asInt();
+                int nombreDePlacesTribuneCentrale = (Integer) match.get("nombreDePlacesTribuneCentrale").asInt();
+                int nombreDePlacesTribuneHonneur = (Integer) match.get("nombreDePlacesTribuneHonneur").asInt();
+                int nombreDePlacesTribuneLateralle = (Integer) match.get("nombreDePlacesTribuneLateralle").asInt();
+                Double prixPourtour = (Double) match.get("prixPourtour").asDouble();
+                Double prixTribuneCentrale = (Double) match.get("prixTribuneCentrale").asDouble();
+                Double prixTribuneHonneur = (Double) match.get("prixTribuneHonneur").asDouble();
+                Double prixTribuneLateralle = (Double) match.get("prixTribuneLateralle").asDouble();
+                Double prixVIP = (Double) match.get("prixVIP").asDouble();
                 System.out.println("Match: " + date);
+            }
+
+            /*
+            matchs.forEach(match -> {
+
             });
+            */
             return Response.ok(matchs).build();
         }catch (Exception ex){
             return Response.ok(ex).build();
