@@ -144,7 +144,7 @@ public class MatchController {
                 int journee = (Integer) match.get("journee");
                 String date = (String) match.get("date");
                 String heure = (String) match.get("heure");
-                String commissaire = (String) match.get("commissaire");
+                Long commissaire = (Long) match.get("commissaire");
                 Long arbitreCentrale = (Long) match.get("arbitreCentrale");
                 Long arbitreAssitant1 = (Long) match.get("arbitreAssitant1");
                 Long arbitreAssitant2 = (Long) match.get("arbitreAssitant2");
