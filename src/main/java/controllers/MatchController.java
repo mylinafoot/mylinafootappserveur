@@ -106,8 +106,11 @@ public class MatchController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response saveEquipeAll(List<Match> matchs) {
-        matchs.forEach(match -> match.persist());
+    public Response saveEquipeAll(List<HashMap> matchs) {
+        matchs.forEach(match -> {
+            String date = (String) match.get("date");
+            System.out.println("Match: "+date);
+        });
         return Response.ok(matchs).build();
     }
     //
