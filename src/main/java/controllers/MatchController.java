@@ -163,7 +163,7 @@ public class MatchController {
             });
             return Response.ok(matchs).build();
         }catch (Exception ex){
-            return Response.ok(ex.getMessage()).build();
+            return Response.ok(ex).build();
         }
     }
     //
