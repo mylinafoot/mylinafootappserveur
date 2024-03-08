@@ -126,6 +126,22 @@ public class MatchController {
         //
     }
 
+    @PUT
+    @Path("afficher")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response updateAffiche(Match match) {
+        Match match1 = Match.findById(match.id);
+        if(match1 == null){
+            return  Response.status(404).build();
+        }
+
+        match1.afficher = match.afficher;
+        //
+        return Response.ok(match1).build();
+        //
+    }
+
     //
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
