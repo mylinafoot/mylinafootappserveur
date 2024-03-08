@@ -115,35 +115,35 @@ public class MatchController {
             JsonNode js = objectMapper.readTree(mt);
             Iterator iterator = js.iterator();
             while (iterator.hasNext()){
+                Match matchS = new Match();
                 JsonNode match = (JsonNode) iterator.next();
-                Long idCalendrier = (Long) match.get("idCalendrier").asLong();
-                Long idEquipeA = (Long) match.get("idEquipeA").asLong();
-                String nomEquipeA = (String) match.get("nomEquipeA").asText();
-                Long idEquipeB = (Long) match.get("idEquipeB").asLong();
-                String nomEquipeB = (String) match.get("nomEquipeB").asText();
-                String stade = (String) match.get("stade").asText();
-                String categorie = (String) match.get("categorie").asText();
-                int journee = (Integer) match.get("journee").asInt();
-                String date = (String) match.get("date").asText();
-                String heure = (String) match.get("heure").asText();
-                Long commissaire = (Long) match.get("commissaire").asLong();
-                Long arbitreCentrale = (Long) match.get("arbitreCentrale").asLong();
-                Long arbitreAssitant1 = (Long) match.get("arbitreAssitant1").asLong();
-                Long arbitreAssitant2 = (Long) match.get("arbitreAssitant2").asLong();
-                Long arbitreProtocolaire = (Long) match.get("arbitreProtocolaire").asLong();
-                int nombreDePlacesVIP = (Integer) match.get("vip").asInt();
-                int nombreDePlacesPourtour = (Integer) match.get("nombreDePlacesPourtour").asInt();
-                int nombreDePlacesTribuneCentrale = (Integer) match.get("nombreDePlacesTribuneCentrale").asInt();
-                int nombreDePlacesTribuneHonneur = (Integer) match.get("nombreDePlacesTribuneHonneur").asInt();
-                int nombreDePlacesTribuneLateralle = (Integer) match.get("nombreDePlacesTribuneLateralle").asInt();
-                Double prixPourtour = (Double) match.get("prixPourtour").asDouble();
-                Double prixTribuneCentrale = (Double) match.get("prixTribuneCentrale").asDouble();
-                Double prixTribuneHonneur = (Double) match.get("prixTribuneHonneur").asDouble();
-                Double prixTribuneLateralle = (Double) match.get("prixTribuneLateralle").asDouble();
-                Double prixVIP = (Double) match.get("prixVIP").asDouble();
-                System.out.println("Match: " + date);
+                matchS.idCalendrier = (Long) match.get("idCalendrier").asLong();
+                matchS.idEquipeA = (Long) match.get("idEquipeA").asLong();
+                matchS.nomEquipeA = (String) match.get("nomEquipeA").asText();
+                matchS.idEquipeB = (Long) match.get("idEquipeB").asLong();
+                matchS.nomEquipeB = (String) match.get("nomEquipeB").asText();
+                matchS.stade = (String) match.get("stade").asText();
+                matchS.categorie = (String) match.get("categorie").asText();
+                matchS.journee = (Integer) match.get("journee").asInt();
+                matchS.date = (String) match.get("date").asText();
+                matchS.heure = (String) match.get("heure").asText();
+                matchS.commissaire = (Long) match.get("commissaire").asLong();
+                matchS.arbitreCentrale = (Long) match.get("arbitreCentrale").asLong();
+                matchS.arbitreAssitant1 = (Long) match.get("arbitreAssitant1").asLong();
+                matchS.arbitreAssitant2 = (Long) match.get("arbitreAssitant2").asLong();
+                matchS.arbitreProtocolaire = (Long) match.get("arbitreProtocolaire").asLong();
+                matchS.nombreDePlacesVIP = (Integer) match.get("vip").asInt();
+                matchS.nombreDePlacesPourtour = (Integer) match.get("nombreDePlacesPourtour").asInt();
+                matchS.nombreDePlacesTribuneCentrale = (Integer) match.get("nombreDePlacesTribuneCentrale").asInt();
+                matchS.nombreDePlacesTribuneHonneur = (Integer) match.get("nombreDePlacesTribuneHonneur").asInt();
+                matchS.nombreDePlacesTribuneLateralle = (Integer) match.get("nombreDePlacesTribuneLateralle").asInt();
+                matchS.prixPourtour = (Double) match.get("prixPourtour").asDouble();
+                matchS.prixTribuneCentrale = (Double) match.get("prixTribuneCentrale").asDouble();
+                matchS.prixTribuneHonneur = (Double) match.get("prixTribuneHonneur").asDouble();
+                matchS.prixTribuneLateralle = (Double) match.get("prixTribuneLateralle").asDouble();
+                matchS.prixVIP = (Double) match.get("prixVIP").asDouble();
+                //System.out.println("Match: " + date);
             }
-
             /*
             matchs.forEach(match -> {
 
