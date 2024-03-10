@@ -203,14 +203,17 @@ public class PaiementController {
                                @QueryParam("montant") double montant,
                                @QueryParam("devise") String devise, HashMap data) throws IOException, URISyntaxException, InterruptedException {
 
-        Long id = (Long) data.get("id");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String matchS = objectMapper.writeValueAsString(data);
+        JsonNode matchSS = objectMapper.readTree(matchS);
+        Long id = matchSS.get("id").asLong();
         //
         Match match = Match.findById(id);
 
         //
         if(data.get("place").equals("Pourtour")){
 
-            int nPlace = (Integer) data.get("nombrePlace");
+            int nPlace = matchSS.get("nombrePlace").asInt();
 
             if(match.nombreDePlacesPourtour >= nPlace){
                 String rep = sendOTP(telephone,devise,montant);
@@ -220,7 +223,7 @@ public class PaiementController {
             }
 
         }else if(data.get("place").equals("Tribune Lateralle")){
-            int nPlace = (Integer) data.get("nombrePlace");
+            int nPlace = matchSS.get("nombrePlace").asInt();
 
             if(match.nombreDePlacesTribuneLateralle >= nPlace){
                 String rep = sendOTP(telephone,devise,montant);
@@ -230,7 +233,7 @@ public class PaiementController {
             }
 
         }else if(data.get("place").equals("Tribune Honneur")){
-            int nPlace = (Integer) data.get("nombrePlace");
+            int nPlace = matchSS.get("nombrePlace").asInt();
 
             if(match.nombreDePlacesTribuneHonneur >= nPlace){
                 String rep = sendOTP(telephone,devise,montant);
@@ -240,7 +243,7 @@ public class PaiementController {
             }
 
         }else{
-            int nPlace = (Integer) data.get("nombrePlace");
+            int nPlace = matchSS.get("nombrePlace").asInt();
 
             if(match.nombreDePlacesTribuneCentrale >= nPlace){
                 String rep = sendOTP(telephone,devise,montant);
