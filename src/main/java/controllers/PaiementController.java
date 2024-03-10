@@ -30,55 +30,58 @@ public class PaiementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response saveBillet(HashMap billet) throws URISyntaxException, IOException, InterruptedException {
+    public Response saveBillet(HashMap bil) throws URISyntaxException, IOException, InterruptedException {
         //
-        ObjectMapper obj = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String matchS = objectMapper.writeValueAsString(bil);
+        JsonNode billet = objectMapper.readTree(matchS);
+        Long id = billet.get("id").asLong();
         //
-        String rep = verifOTP((String) billet.get("otp"), (String) billet.get("referencenumber"));
-        JsonNode jsonNode = obj.readTree(rep);
+        String rep = verifOTP(billet.get("otp").asText(), billet.get("referencenumber").asText());
+        JsonNode jsonNode = objectMapper.readTree(rep);
         if(jsonNode.get("respcodedesc").asText().contains("Approuvé")) {
             //Text a revoire
             List<HashMap> billes = new LinkedList<>();
             //
-            Long id = (Long) billet.get("id");
+            Long ids = billet.get("id").asLong();
             //
             Match match = Match.findById(id);
             //
-            for (int t = 0; t < (Integer) billet.get("nombrePlace"); t++) {
+            for (int t = 0; t < billet.get("nombrePlace").asInt(); t++) {
                 Billet bi = new Billet();
-                bi.idMatch = (Long) billet.get("id");
-                bi.qrCode = (String) billet.get("qrCode");
-                bi.typePlace = (String) billet.get("typePlace");
-                bi.journee = (String) billet.get("journee");
-                bi.nomEquipeA = (String) billet.get("nomEquipeA");
-                bi.nomEquipeB = (String) billet.get("nomEquipeB");
-                bi.date = (String) billet.get("date");
-                bi.heure = (String) billet.get("heure");
-                bi.stade = (String) billet.get("stade");
+                bi.idMatch = billet.get("id").asLong();
+                bi.qrCode = billet.get("qrCode").asText();
+                bi.typePlace = billet.get("typePlace").asText();
+                bi.journee = billet.get("journee").asText();
+                bi.nomEquipeA = billet.get("nomEquipeA").asText();
+                bi.nomEquipeB = billet.get("nomEquipeB").asText();
+                bi.date = billet.get("date").asText();
+                bi.heure = billet.get("heure").asText();
+                bi.stade = billet.get("stade").asText();
                 //----------------------------------------------------------------
                 if(billet.get("place").equals("Pourtour")){
 
-                    int nPlace = (Integer) billet.get("nombrePlace");
+                    int nPlace = billet.get("nombrePlace").asInt();
 
                     match.nombreDePlacesPourtour = match.nombreDePlacesPourtour - nPlace;
 
                 }
                 if(billet.get("place").equals("Tribune Lateralle")){
-                    int nPlace = (Integer) billet.get("nombrePlace");
+                    int nPlace = billet.get("nombrePlace").asInt();
 
                     //if(match.nombreDePlacesTribuneLateralle
                     match.nombreDePlacesTribuneLateralle = match.nombreDePlacesTribuneLateralle - nPlace;
 
                 }
                 if(billet.get("place").equals("Tribune Honneur")){
-                    int nPlace = (Integer) billet.get("nombrePlace");
+                    int nPlace = billet.get("nombrePlace").asInt();
 
                     //if(match.nombreDePlacesTribuneHonneur
                     match.nombreDePlacesTribuneHonneur = match.nombreDePlacesTribuneHonneur - nPlace;
 
                 }
                 if(billet.get("place").equals("Tribune Centrale")){
-                    int nPlace = (Integer) billet.get("nombrePlace");
+                    int nPlace = billet.get("nombrePlace").asInt();
 
                     //if(match.nombreDePlacesTribuneHonneur
                     match.nombreDePlacesTribuneHonneur = match.nombreDePlacesTribuneHonneur - nPlace;
@@ -90,11 +93,11 @@ public class PaiementController {
                 //
                 bi.qrCode = bi.qrCode +t;
                 //
-                billet.put("qrCode",bi.qrCode);
+                bil.put("qrCode",bi.qrCode);
                 //
                 bi.persist();
                 //
-                billes.add(billet);
+                billes.add(bil);
             }
             //
             return Response.ok(billes).build();
@@ -260,11 +263,11 @@ public class PaiementController {
     private String verifOTP(String otp, String rrn) throws URISyntaxException, IOException, InterruptedException {
         //https://test.new.rawbankillico.com:4003/RAWAPIGateway/ecommerce/payment/770013/000007316065
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("https://test.new.rawbankillico.com:4003/RAWAPIGateway/ecommerce/payment/"+otp+"/"+rrn+""))
-                .header("LogInName", "a5169891f7424defec80033e2c4264004716e4846b6929caea8f431c7568d604")
+                .uri(new URI("https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment/"+otp+"/"+rrn+""))
+                .header("LogInName", "9d668476741822a134ab199f33f43576304c9d49fcb3c487774954cd5d31cd06")
                 .header("Content-Type", "application/json")
-                .header("LogInPass", "22cf830393691407806b22424dd66354e543c0e34f8161f00df1e74fa0a61e2b")
-                .header("Authorization", "Basic ZGVsdGE6MTIzNDU2")
+                .header("LoginPass", "30b9cd6d7001dbbc0e724a6946725281f87df6877e8bdd43484c53cb7abe1b82")
+                .header("Authorization", "Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1")
                 .GET().build();
         //
         HttpResponse<String> response = HttpClient
@@ -278,13 +281,14 @@ public class PaiementController {
     }
 
     private String sendOTP(String telephone, String devise, double montant ) throws URISyntaxException, IOException, InterruptedException {
+        //4004
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("https://test.new.rawbankillico.com:4003/RAWAPIGateway/ecommerce/payment"))
-                .header("LogInName", "a5169891f7424defec80033e2c4264004716e4846b6929caea8f431c7568d604")
+                .uri(new URI("https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment"))
+                .header("LogInName", "9d668476741822a134ab199f33f43576304c9d49fcb3c487774954cd5d31cd06")
                 .header("Content-Type", "application/json")
-                .header("LoginPass", "22cf830393691407806b22424dd66354e543c0e34f8161f00df1e74fa0a61e2b")
-                .header("Authorization", "Basic ZGVsdGE6MTIzNDU2")
-                .POST(HttpRequest.BodyPublishers.ofString("{\r\n\t\"mobilenumber\": \""+telephone+"\",\r\n\t\"trancurrency\":\""+devise+"\",\r\n\t\"amounttransaction\": \""+montant+"\",\r\n\t\"merchantid\": \"merch0000000000001042\",\r\n\t\"invoiceid\":\"123456715\",\r\n\t\"terminalid\":\"123456789012\",\r\n\t\"encryptkey\": \"NozZSGL660ZZM8u4kUTV4CfgSy3G7wpFDQ0vCOhLWLpmnkNLkGia6mn7J2j2f4CJ/RDKF0ICxN7mBD9ciURYWj97KT2LYBoaPJVJs3hv5s5SGYoOw4fcAigt7+0nQiza\",\r\n\t\"securityparams\":{\r\n\t\t\"gpslatitude\": \"24.864190\",\r\n\t\t\"gpslongitude\": \"67.090420\"\r\n\t}\r\n}"))
+                .header("LoginPass", "30b9cd6d7001dbbc0e724a6946725281f87df6877e8bdd43484c53cb7abe1b82")
+                .header("Authorization", "Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1")
+                .POST(HttpRequest.BodyPublishers.ofString("{\r\n\t\"mobilenumber\": \""+telephone+"\",\r\n\t\"trancurrency\":\""+devise+"\",\r\n\t\"amounttransaction\": \""+montant+"\",\r\n\t\"merchantid\": \"brnch0000000000000801\",\r\n\t\"invoiceid\":\"123456715\",\r\n\t\"terminalid\":\"123456789012\",\r\n\t\"encryptkey\": \"AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP\",\r\n\t\"securityparams\":{\r\n\t\t\"gpslatitude\": \"24.864190\",\r\n\t\t\"gpslongitude\": \"67.090420\"\r\n\t}\r\n}"))
                 .build();
         //
         HttpResponse<String> response = HttpClient

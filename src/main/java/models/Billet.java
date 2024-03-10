@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 @Entity
 public class Billet extends PanacheEntity {
     public Long idMatch;
+    public Long idUser;
 
     public String journee;
     public String nomEquipeA;
