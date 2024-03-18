@@ -17,6 +17,7 @@ public class Billet extends PanacheEntity {
     public String nomEquipeB;
     public String date;
     public String heure;
+
     public String stade;
     public String typePlace;
     public String qrCode;
