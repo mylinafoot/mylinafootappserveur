@@ -115,46 +115,41 @@ public class PaiementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response saveDirect(HashMap billet) throws URISyntaxException, IOException, InterruptedException {
+    public Response saveDirect(HashMap bil) throws URISyntaxException, IOException, InterruptedException {
         //
-        ObjectMapper obj = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String matchS = objectMapper.writeValueAsString(bil);
+        JsonNode billet = objectMapper.readTree(matchS);
         //
-        String rep = verifOTP((String) billet.get("otp"), (String) billet.get("referencenumber"));
-        JsonNode jsonNode = obj.readTree(rep);
+        String rep = verifOTP((String) billet.get("otp").asText(), (String) billet.get("referencenumber").asText());
+        JsonNode jsonNode = objectMapper.readTree(rep);
         if(jsonNode.get("respcodedesc").asText().contains("Approuvé")) {
             //Text a revoire
             List<HashMap> billes = new LinkedList<>();
             //
-            Long id = (Long) billet.get("id");
+            Long id = billet.get("id").asLong();
             //
             Match match = Match.findById(id);
             //
-            for (int t = 0; t < (Integer) billet.get("nombrePlace"); t++) {
                 Billet bi = new Billet();
-                bi.idMatch = (Long) billet.get("id");
-                bi.qrCode = (String) billet.get("qrcode");
-                bi.typePlace = (String) billet.get("typePlace");
-                bi.journee = (String) billet.get("journee");
-                bi.nomEquipeA = (String) billet.get("nomEquipeA");
-                bi.nomEquipeB = (String) billet.get("nomEquipeB");
-                bi.date = (String) billet.get("date");
-                bi.heure = (String) billet.get("heure");
-                bi.stade = (String) billet.get("stade");
-                //----------------------------------------------------------------
+            bi.idMatch = billet.get("id").asLong();
+            bi.qrCode = billet.get("qrcode").asText();
+            bi.typePlace = billet.get("place").asText();
+            bi.journee = billet.get("journee").asText();
+            bi.nomEquipeA = billet.get("nomEquipeA").asText();
+            bi.nomEquipeB = billet.get("nomEquipeB").asText();
+            bi.date = billet.get("date").asText();
+            bi.heure = billet.get("heure").asText();
+            bi.stade = billet.get("stade").asText();
+            //----------------------------------------------------------------
+            bi.qrCode = bi.qrCode;
+            //
+            bil.put("qrCode",bi.qrCode);
+            //
+            bi.persist();
+            //
+            billes.add(bil);
 
-
-                //----------------------------------------------------------------
-                //bi.qrCode = (String) billet.get("qrCode");
-                //bi.qrCode = (String) billet.get("qrCode");
-                //
-                bi.qrCode = bi.qrCode +t;
-                //
-                billet.put("qrCode",bi.qrCode);
-                //
-                bi.persist();
-                //
-                billes.add(billet);
-            }
             //
             return Response.ok(billes).build();
         }else{
@@ -189,46 +184,52 @@ public class PaiementController {
         //
         Match match = Match.findById(id);
 
-        //
-        if(data.get("place").equals("Pourtour")){
+        if(data.get("place").equals("Direct")){
+            String rep = sendOTP(telephone, devise, montant);
+            return Response.ok(rep).build();
+        }else {
 
-            int nPlace = matchSS.get("nombrePlace").asInt();
+            //
+            if (data.get("place").equals("Pourtour")) {
 
-            if(match.nombreDePlacesPourtour >= nPlace){
-                String rep = sendOTP(telephone,devise,montant);
-                return Response.ok(rep).build();
-            }else{
-                return Response.status(404).entity("Plus de place disponible dans le pourtour").build();
-            }
+                int nPlace = matchSS.get("nombrePlace").asInt();
 
-        }else if(data.get("place").equals("Tribune Lateralle")){
-            int nPlace = matchSS.get("nombrePlace").asInt();
+                if (match.nombreDePlacesPourtour >= nPlace) {
+                    String rep = sendOTP(telephone, devise, montant);
+                    return Response.ok(rep).build();
+                } else {
+                    return Response.status(404).entity("Plus de place disponible dans le pourtour").build();
+                }
 
-            if(match.nombreDePlacesTribuneLateralle >= nPlace){
-                String rep = sendOTP(telephone,devise,montant);
-                return Response.ok(rep).build();
-            }else{
-                return Response.status(404).entity("Plus de place disponible dans la tribune lateralle").build();
-            }
+            } else if (data.get("place").equals("Tribune Lateralle")) {
+                int nPlace = matchSS.get("nombrePlace").asInt();
 
-        }else if(data.get("place").equals("Tribune Honneur")){
-            int nPlace = matchSS.get("nombrePlace").asInt();
+                if (match.nombreDePlacesTribuneLateralle >= nPlace) {
+                    String rep = sendOTP(telephone, devise, montant);
+                    return Response.ok(rep).build();
+                } else {
+                    return Response.status(404).entity("Plus de place disponible dans la tribune lateralle").build();
+                }
 
-            if(match.nombreDePlacesTribuneHonneur >= nPlace){
-                String rep = sendOTP(telephone,devise,montant);
-                return Response.ok(rep).build();
-            }else{
-                return Response.status(404).entity("Plus de place disponible dans la tribune d'honneure").build();
-            }
+            } else if (data.get("place").equals("Tribune Honneur")) {
+                int nPlace = matchSS.get("nombrePlace").asInt();
 
-        }else{
-            int nPlace = matchSS.get("nombrePlace").asInt();
+                if (match.nombreDePlacesTribuneHonneur >= nPlace) {
+                    String rep = sendOTP(telephone, devise, montant);
+                    return Response.ok(rep).build();
+                } else {
+                    return Response.status(404).entity("Plus de place disponible dans la tribune d'honneure").build();
+                }
 
-            if(match.nombreDePlacesTribuneCentrale >= nPlace){
-                String rep = sendOTP(telephone,devise,montant);
-                return Response.ok(rep).build();
-            }else{
-                return Response.status(404).entity("Plus de place disponible dans la tribune centrale").build();
+            } else {
+                int nPlace = matchSS.get("nombrePlace").asInt();
+
+                if (match.nombreDePlacesTribuneCentrale >= nPlace) {
+                    String rep = sendOTP(telephone, devise, montant);
+                    return Response.ok(rep).build();
+                } else {
+                    return Response.status(404).entity("Plus de place disponible dans la tribune centrale").build();
+                }
             }
         }
 
