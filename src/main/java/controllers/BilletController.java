@@ -36,6 +36,7 @@ public class BilletController {
                 return Response.status(200).entity("Ce billet a déjà été scanné !"+billet.typePlace).build();
             }else{
                 billet.checker = true;
+                billet.idAgent = idAgent;
                 return Response.status(200).entity("Bienvenu et bon match à vous! \n"+billet.typePlace).build();
             }
         }else{
