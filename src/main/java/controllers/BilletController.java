@@ -29,7 +29,7 @@ public class BilletController {
         //params.put("telephone",telephone);
         //params.put("mdp",mdp);
         //
-        Billet billet = (Billet) Billet.find("telephone","").firstResult();
+        Billet billet = (Billet) Billet.find("qrCode",qrcode).firstResult();
         if(billet != null){
             //
             if(billet.checker){
