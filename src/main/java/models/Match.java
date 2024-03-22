@@ -65,4 +65,6 @@ public class Match extends PanacheEntity {
     @Column(columnDefinition = "Boolean default false")
     public boolean afficher;
 
+    public String lienMatchJouer;
+
 }

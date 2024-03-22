@@ -31,8 +31,11 @@ public class BilletController {
         Billet billet = (Billet) Billet.find("qrCode",qrcode).firstResult();
         if(billet != null){
             //
+            System.out.println("Billet: "+billet.qrCode);
+            //
+            billet.checker = billet.checker == null ? false : true;
             if(billet.checker){
-                return Response.status(200).entity("Ce billet a déjà été scanné !"+billet.typePlace).build();
+                return Response.status(200).entity("Ce billet a déjà été scanné !\n"+billet.typePlace).build();
             }else{
                 billet.checker = true;
                 billet.idAgent = idAgent;
@@ -41,7 +44,6 @@ public class BilletController {
         }else{
             return Response.status(404).entity("Ce billet n'est enregistré dans la base de donné.").build();
         }
-
     }
 
     @GET

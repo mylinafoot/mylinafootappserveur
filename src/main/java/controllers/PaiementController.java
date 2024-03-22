@@ -59,6 +59,7 @@ public class PaiementController {
                 bi.date = billet.get("date").asText();
                 bi.heure = billet.get("heure").asText();
                 bi.stade = billet.get("stade").asText();
+                bi.checker = false;
                 //----------------------------------------------------------------
                 if(billet.get("place").equals("Pourtour")){
 
@@ -143,6 +144,7 @@ public class PaiementController {
             bi.stade = billet.get("stade").asText();
             //----------------------------------------------------------------
             bi.qrCode = bi.qrCode;
+            bi.checker = false;
             //
             bil.put("qrCode",bi.qrCode);
             //
