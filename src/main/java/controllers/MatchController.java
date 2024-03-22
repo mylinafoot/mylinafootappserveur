@@ -170,6 +170,9 @@ public class MatchController {
         match1.quiRecoit = match.quiRecoit;
         match1.date = match.date;
         match1.heure = match.heure;
+
+        //match1.stade = match.heure;
+
         match1.commissaire = match.commissaire;
         match1.arbitreCentrale = match.arbitreCentrale;
         match1.arbitreAssitant1 = match.arbitreAssitant1;
@@ -182,6 +185,8 @@ public class MatchController {
         match1.mdpOfficier = match.mdpOfficier;
         match1.mdpArbitreCentrale = match.mdpArbitreCentrale;
         match1.vip = match.vip;
+        match1.prixVIP = match.prixVIP;
+
         //
         match1.nombreDePlacesTribuneCentrale = match.nombreDePlacesTribuneCentrale;
         match1.nombreDePlacesPourtour = match.nombreDePlacesPourtour;
