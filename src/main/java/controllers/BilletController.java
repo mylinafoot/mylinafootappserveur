@@ -59,6 +59,22 @@ public class BilletController {
           return Response.ok(billets).build();
     }
 
+    @GET
+    @Path("billetvendus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response allBillet(@QueryParam("idMatch") Long idMatch, @QueryParam("idAgent") Long idAgent) {
+        //
+        HashMap params = new HashMap();
+        params.put("idMatch",idMatch);
+        params.put("idAgent",idAgent);
+
+        //
+        List<Billet> billets = Billet.find("idMatch =: idMatch and idAgent =: idAgent",params).list();
+        return Response.ok(billets).build();
+    }
+
+
     @POST
     @Path("all")
     @Transactional
