@@ -1,11 +1,14 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.Commissaire;
 import models.Match;
+import models.Point;
 import models.rapport.Rapport;
 
 import java.util.HashMap;
@@ -109,7 +112,7 @@ public class RapportController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response saveEquipe(Rapport rapport) {
+    public Response saveRapport(Rapport rapport) {
         //
         try {
             System.out.println("idMatch: "+rapport.idMatch);
@@ -119,11 +122,60 @@ public class RapportController {
                 //
                 match.mdpCommissaire = "";
             }
-                if (rapport.typeRapport == 2) {
+            if (rapport.typeRapport == 2) {
                 //
                 match.mdpArbitreCentrale = "";
+                //
+                try {
+                    System.out.println("idMatch: "+rapport.idMatch);
+                    //Je dois mettre à jour le match avec idMatch que le client envoit.
+                    //Match match = Match.findById(rapport.idMatch);
+                    //
+                    HashMap rapporte = rapport.rapport;
+                    //
+                    ObjectMapper obj = new ObjectMapper();
+                    //
+                    String rapText = obj.writeValueAsString(rapporte);
+                    //
+                    JsonNode jsonNode = obj.readTree(rapText);
+                    //
+                    int scoreEqA = jsonNode.get("scoreFin").get("a").asInt();
+                    System.out.println("Le eqA: "+jsonNode.get("scoreFin").get("a"));
+                    System.out.println("Le score eqA: "+jsonNode.get("scoreFin").get("a"));
+                    System.out.println("__________________________________________________");
+
+                    int scoreEqB = jsonNode.get("scoreFin").get("b").asInt();
+                    System.out.println("Le eqB: "+jsonNode.get("scoreFin").get("b"));
+                    System.out.println("Le score eqB: "+jsonNode.get("scoreFin").get("b"));
+                    //
+                    //scoreFin//
+                    Point pointEquipeA = new Point();
+                    pointEquipeA.equipe = rapport.nomEquipeA;
+                    pointEquipeA.idEquipe = rapport.idEquipeA;
+                    pointEquipeA.idSaison = rapport.idCalendrier;
+                    pointEquipeA.idMatch = rapport.idMatch;
+                    pointEquipeA.butMarque = scoreEqA;
+                    pointEquipeA.butEncaisse = scoreEqB;
+                    pointEquipeA.point = scoreEqA > scoreEqB ? 3 : scoreEqA == scoreEqB ? 1 : 0;
+                    pointEquipeA.persist();
+                    //
+                    Point pointEquipeB = new Point();
+                    pointEquipeB.equipe = rapport.nomEquipeB;
+                    pointEquipeB.idEquipe = rapport.idEquipeB;
+                    pointEquipeB.idSaison = rapport.idCalendrier;
+                    pointEquipeB.idMatch = rapport.idMatch;
+                    pointEquipeB.butMarque = scoreEqB;
+                    pointEquipeB.butEncaisse = scoreEqA;
+                    pointEquipeB.point = scoreEqB > scoreEqA ? 3 : scoreEqA == scoreEqB ? 1 : 0;
+                    pointEquipeB.persist();
+                    //
+                    rapport.persist();
+                }catch (Exception ex){
+                    //
+                    System.out.println("Erreur du à : "+ex);
+                }
             }
-                if (rapport.typeRapport == 3) {
+            if (rapport.typeRapport == 3) {
                 //
                 match.mdpOfficier = "";
             }
@@ -139,6 +191,67 @@ public class RapportController {
         return Response.ok().build();
     }
     //
+
+    @POST
+    @Path("test")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response saveRapportTest(Rapport rapport) {
+        //
+        try {
+            System.out.println("idMatch: "+rapport.idMatch);
+            //Je dois mettre à jour le match avec idMatch que le client envoit.
+            //Match match = Match.findById(rapport.idMatch);
+            //
+            HashMap rapporte = rapport.rapport;
+            //
+            ObjectMapper obj = new ObjectMapper();
+            //
+            String rapText = obj.writeValueAsString(rapporte);
+            //
+            JsonNode jsonNode = obj.readTree(rapText);
+            //
+            int scoreEqA = jsonNode.get("scoreFin").get("a").asInt();
+            System.out.println("Le eqA: "+jsonNode.get("scoreFin").get("a"));
+            System.out.println("Le score eqA: "+jsonNode.get("scoreFin").get("a"));
+            System.out.println("__________________________________________________");
+
+            int scoreEqB = jsonNode.get("scoreFin").get("b").asInt();
+            System.out.println("Le eqB: "+jsonNode.get("scoreFin").get("b"));
+            System.out.println("Le score eqB: "+jsonNode.get("scoreFin").get("b"));
+            //
+            //scoreFin//
+            Point pointEquipeA = new Point();
+            pointEquipeA.equipe = rapport.nomEquipeA;
+            pointEquipeA.idEquipe = rapport.idEquipeA;
+            pointEquipeA.idSaison = rapport.idCalendrier;
+            pointEquipeA.idMatch = rapport.idMatch;
+            pointEquipeA.butMarque = scoreEqA;
+            pointEquipeA.butEncaisse = scoreEqB;
+            pointEquipeA.point = scoreEqA > scoreEqB ? 3 : scoreEqA == scoreEqB ? 1 : 0;
+            pointEquipeA.persist();
+            //
+            Point pointEquipeB = new Point();
+            pointEquipeB.equipe = rapport.nomEquipeB;
+            pointEquipeB.idEquipe = rapport.idEquipeB;
+            pointEquipeB.idSaison = rapport.idCalendrier;
+            pointEquipeB.idMatch = rapport.idMatch;
+            pointEquipeB.butMarque = scoreEqB;
+            pointEquipeB.butEncaisse = scoreEqA;
+            pointEquipeB.point = scoreEqB > scoreEqA ? 3 : scoreEqA == scoreEqB ? 1 : 0;
+            pointEquipeB.persist();
+            //
+            rapport.persist();
+        }catch (Exception ex){
+            //
+            System.out.println("Erreur du à : "+ex);
+        }
+
+        return Response.ok().build();
+    }
+    //
+
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional

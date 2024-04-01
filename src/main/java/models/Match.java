@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Match extends PanacheEntity {
-
     public Long idCalendrier;
     public Long idEquipeA;
     public String nomEquipeA;
@@ -61,10 +60,8 @@ public class Match extends PanacheEntity {
     public boolean prevente;
     @Column(columnDefinition = "Boolean default true")
     public boolean envente;
-
     @Column(columnDefinition = "Boolean default false")
     public boolean afficher;
-
     public String lienMatchJouer;
 
 }

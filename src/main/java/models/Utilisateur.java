@@ -7,5 +7,7 @@ import jakarta.persistence.Entity;
 public class Utilisateur extends PanacheEntity {
     public String nomUtilisateur;
     public String telephone;
+    public String province;
+    public String pays;
     public String mdp;
 }
