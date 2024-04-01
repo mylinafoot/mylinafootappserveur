@@ -33,7 +33,7 @@ public class BilletController {
             //
             System.out.println("Billet: "+billet.qrCode);
             //
-            billet.checker = billet.checker == null ? false : true;
+            //billet.checker = billet.checker == null ? false : true;
             if(billet.checker){
                 return Response.status(200).entity("Ce billet a déjà été scanné !\n"+billet.typePlace).build();
             }else{
