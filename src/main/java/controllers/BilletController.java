@@ -74,6 +74,30 @@ public class BilletController {
         return Response.ok(billets).build();
     }
 
+    @PUT
+    @Path("all")
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response putAllBillet() {
+
+        List<Billet> billets = new LinkedList<>();
+        //
+        for(int i = 0; i < billets.size(); i++){
+            if(i < 11){
+                billets.get(i).checker = false;
+                billets.get(i).typePlace = "Pourtour";
+            }else if(i >11 && i < 30){
+                //
+                billets.get(i).checker = false;
+                billets.get(i).typePlace = "Tribune Lateralle";
+            }else{
+                //
+                billets.get(i).checker = false;
+                billets.get(i).typePlace = "Tribune Honneur";
+            }
+        }
+        return Response.ok(billets).build();
+    }
 
     @POST
     @Path("all")
@@ -84,6 +108,7 @@ public class BilletController {
         List<Billet> billets = new LinkedList<>();
         for(int i = 0; i < 10; i++){
             Billet billet = new Billet();
+            billet.checker = false;
             billet.qrCode =getCode();
             billet.typePlace = "Pourtour";
             billet.idMatch = 0L;
