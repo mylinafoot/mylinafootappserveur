@@ -80,7 +80,7 @@ public class BilletController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response putAllBillet() {
 
-        List<Billet> billets = new LinkedList<>();
+        List<Billet> billets = Billet.listAll();
         //
         for(int i = 0; i < billets.size(); i++){
             if(billets.get(i).idMatch == 0) {
