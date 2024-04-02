@@ -83,17 +83,19 @@ public class BilletController {
         List<Billet> billets = new LinkedList<>();
         //
         for(int i = 0; i < billets.size(); i++){
-            if(i < 11){
-                billets.get(i).checker = false;
-                billets.get(i).typePlace = "Pourtour";
-            }else if(i >11 && i < 30){
-                //
-                billets.get(i).checker = false;
-                billets.get(i).typePlace = "Tribune Lateralle";
-            }else{
-                //
-                billets.get(i).checker = false;
-                billets.get(i).typePlace = "Tribune Honneur";
+            if(billets.get(i).idMatch == 0) {
+                if (i < 11) {
+                    billets.get(i).checker = false;
+                    billets.get(i).typePlace = "Pourtour";
+                } else if (i > 11 && i < 30) {
+                    //
+                    billets.get(i).checker = false;
+                    billets.get(i).typePlace = "Tribune Lateralle";
+                } else {
+                    //
+                    billets.get(i).checker = false;
+                    billets.get(i).typePlace = "Tribune Honneur";
+                }
             }
         }
         return Response.ok(billets).build();
