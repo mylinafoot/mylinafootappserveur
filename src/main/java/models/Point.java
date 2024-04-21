@@ -9,7 +9,10 @@ public class Point extends PanacheEntity {
     public Long idMatch;
     public Long idEquipe;
     public String equipe;
+    public String categorie;
+    public int journee;
     public int point;
+
     public int butMarque;
     public int butEncaisse;
 

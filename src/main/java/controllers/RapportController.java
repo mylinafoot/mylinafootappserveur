@@ -69,13 +69,15 @@ public class RapportController {
     @Path("rapport")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRapport(@QueryParam("idCalendrier") Long idCalendrier,
-                                            @QueryParam("typeRapport") int typeRapport) {
+                                            @QueryParam("typeRapport") int typeRapport, @QueryParam("idMatch") Long idMatch) {
+
         System.out.println("idCalendrier: "+idCalendrier+" -- typeRapport: "+typeRapport);
         HashMap params = new HashMap();
         params.put("idCalendrier",idCalendrier);
         params.put("typeRapport",typeRapport);
+        params.put("idMatch",idMatch);
 
-        Rapport rapport = (Rapport) Rapport.find("idCalendrier =: idCalendrier and typeRapport =: typeRapport",params).firstResult();
+        Rapport rapport = (Rapport) Rapport.find("idCalendrier =: idCalendrier and typeRapport =: typeRapport and idMatch =: idMatch",params).firstResult();
         //
         Match match = Match.findById(rapport.idMatch);
         //
@@ -156,6 +158,8 @@ public class RapportController {
                     pointEquipeA.idMatch = rapport.idMatch;
                     pointEquipeA.butMarque = scoreEqA;
                     pointEquipeA.butEncaisse = scoreEqB;
+                    pointEquipeA.journee = rapport.journee;
+                    pointEquipeA.categorie = rapport.categorie;
                     pointEquipeA.point = scoreEqA > scoreEqB ? 3 : scoreEqA == scoreEqB ? 1 : 0;
                     pointEquipeA.persist();
                     //
@@ -166,6 +170,8 @@ public class RapportController {
                     pointEquipeB.idMatch = rapport.idMatch;
                     pointEquipeB.butMarque = scoreEqB;
                     pointEquipeB.butEncaisse = scoreEqA;
+                    pointEquipeB.journee = rapport.journee;
+                    pointEquipeB.categorie = rapport.categorie;
                     pointEquipeB.point = scoreEqB > scoreEqA ? 3 : scoreEqA == scoreEqB ? 1 : 0;
                     pointEquipeB.persist();
                     //
