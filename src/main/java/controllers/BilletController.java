@@ -28,6 +28,13 @@ public class BilletController {
         //params.put("telephone",telephone);
         //params.put("mdp",mdp);
         //
+        List<Billet> billets = Billet.listAll();
+        //
+        for(Billet billet : billets){
+            System.out.println(billet.qrCode);
+            System.out.println("Billet: "+billet.qrCode+ " = "+qrcode+" == "+billet.qrCode.equals(qrcode));
+        }
+        //
         Billet billet = (Billet) Billet.find("qrCode",qrcode).firstResult();
         if(billet != null){
             //
