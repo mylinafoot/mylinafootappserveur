@@ -72,10 +72,10 @@ public class AgentController {
 
     //
     @DELETE
-    @Path("id")
+    //@Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response removeEquipe(@PathParam("id") Long id) {
+    public Response removeEquipe(@QueryParam("id") Long id) {
         Agent.deleteById(id);
         return Response.ok().build();
     }
