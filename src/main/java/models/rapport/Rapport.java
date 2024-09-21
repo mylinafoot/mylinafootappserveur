@@ -19,6 +19,9 @@ public class Rapport extends PanacheEntity {
     public String saison;
     public String categorie;
     public int journee;
+    public Long idjoueur;
+    public String typecarton;
+    public String raison;
     public String date;
     public String heure;
     public Long commissaire;
