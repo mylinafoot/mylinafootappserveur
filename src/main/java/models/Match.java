@@ -12,6 +12,7 @@ public class Match extends PanacheEntity {
     public Long idEquipeB;
     public String nomEquipeB;
     public String stade;
+    public String villematchjoue;
     public boolean terrainNeutre;
     public Long quiRecoit;
     public String saison;

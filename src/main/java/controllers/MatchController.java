@@ -123,6 +123,7 @@ public class MatchController {
                 matchS.idEquipeB = (Long) match.get("idEquipeB").asLong();
                 matchS.nomEquipeB = (String) match.get("nomEquipeB").asText();
                 matchS.stade = (String) match.get("stade").asText();
+                matchS.villematchjoue = (String) match.get("villematchjoue").asText();
                 matchS.categorie = (String) match.get("categorie").asText();
                 matchS.journee = (Integer) match.get("journee").asInt();
                 matchS.date = (String) match.get("date").asText();
@@ -166,6 +167,7 @@ public class MatchController {
         }
 
         match1.stade = match.stade;
+        match1.villematchjoue = match.villematchjoue;
         match1.terrainNeutre = match.terrainNeutre;
         match1.quiRecoit = match.quiRecoit;
         match1.date = match.date;
