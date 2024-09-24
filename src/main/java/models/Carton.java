@@ -8,4 +8,5 @@ public class Carton extends PanacheEntity {
     public Long idMatch;
     public String typecarton;
     public String raison;
+    public Long idjoueur;
 }

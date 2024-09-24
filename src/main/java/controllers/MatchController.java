@@ -23,7 +23,7 @@ public class MatchController {
         return Response.ok(matches).build();
     }
 
-    @GET
+    /*@GET
     @Path("allaffiches/{idCalendrier}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllAffiches(@PathParam("idCalendrier") Long idCalendrier) {
@@ -36,6 +36,42 @@ public class MatchController {
         });
 
         return Response.ok(matchess).build();
+    }*/
+
+    @GET
+    @Path("allaffiches/{idCalendrier}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllAffiches(@PathParam("idCalendrier") Long idCalendrier,
+                                   @QueryParam("page") @DefaultValue("1") int page,
+                                   @QueryParam("pageSize") @DefaultValue("3") int pageSize) {
+        try {
+            // 1. Fetch paginated data from your data source (e.g., database)
+            List<Match> matches = Match.find("idCalendrier = ?1 and afficher = true", idCalendrier)
+                    .page(page - 1, pageSize) // Utilisez la méthode page() de PanacheQuery
+                    .list();
+
+            // 2. Get total count of matches
+            long totalCount = Match.count("idCalendrier = ?1 and afficher = true", idCalendrier);
+
+            // 3. Check if there are more matches to load
+            if (matches.isEmpty() && page > 1) {
+                // If no matches are found and we are on a page greater than 1, it means we've reached the end
+                return Response.ok("Il n'y a plus de matches à charger.")
+                        .header("X-Total-Count", totalCount)
+                        .header("X-Page", page)
+                        .header("X-Page-Size", pageSize)
+                        .build();
+            }
+
+            // 4. Create a response object with pagination metadata
+            return Response.ok(matches)
+                    .header("X-Total-Count", totalCount)
+                    .header("X-Page", page)
+                    .header("X-Page-Size", pageSize)
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
     //
     @GET
