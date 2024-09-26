@@ -209,14 +209,15 @@ public class RapportController {
                     pointEquipeA.differencebut = scoreEqB - scoreEqA;
                     pointEquipeB.persist();
 
+                    //Carton persistance
 
-                    Carton cartonjoueur= new Carton();
+                    /*Carton cartonjoueur= new Carton();
                     cartonjoueur.idjoueur=rapport.idjoueur;
                     cartonjoueur.idMatch=rapport.idMatch;
                     cartonjoueur.raison= rapport.raison;
                     cartonjoueur.typecarton= rapport.typecarton;
 
-                    cartonjoueur.persist();
+                    cartonjoueur.persist();*/
                     //CARTON
                     /*Carton cartonjoeur = new Carton();
                     //cartonjoeur.idJoueur = rapport.jo;
@@ -335,132 +336,4 @@ public class RapportController {
         Rapport.deleteById(id);
         return Response.ok().build();
     }
-
-    //API CLASSEMENT
-    /*@GET
-    @Path("all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll() {
-        List<Point> points = Point.listAll();
-        System.out.println("Points récupérés : " + points.size());
-        points.forEach(point -> System.out.println("LUCIENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" +point)); // Affiche chaque point
-        return Response.ok(points).build();
-    }
-
-    @GET
-    @Path("classement")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response getClassement(
-            @QueryParam("idCalendrier") Long idCalendrier,
-            @QueryParam("categorie") String categorie,
-            @QueryParam("journee") int journee,
-            @QueryParam("typeCompetition") String typeCompetition) {
-
-        // Paramètres pour filtrer les points
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("idSaison", idCalendrier);
-        params.put("categorie", categorie);
-
-        // Récupération des points associés à la saison et à la catégorie
-        List<Point> points = Point.find("idSaison =: idSaison and categorie =: categorie", params).list();
-
-        // Vérification si des points sont trouvés
-        if (points == null || points.isEmpty()) {
-            System.out.println("Aucun point trouvé pour la saison: " + idCalendrier + " et la catégorie: " + categorie);
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Aucun point trouvé pour les critères donnés.")
-                    .build();
-        }
-
-        // Récupérer les équipes à partir des points trouvés
-        Set<Long> equipes = getEquipes(points);
-
-        if (equipes.isEmpty()) {
-            System.out.println("Aucune équipe trouvée pour les points fournis.");
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Aucune équipe trouvée pour les critères donnés.")
-                    .build();
-        }
-
-        // Calcul du classement
-        List<Classement> classement = calculateClassement(equipes, points, journee, typeCompetition);
-
-        return Response.ok(classement).build();
-    }
-
-    // Méthode pour calculer le classement à partir des points
-    private List<Classement> calculateClassement(Set<Long> equipes, List<Point> pts, int journee, String typeCompetition) {
-        List<Classement> classements = new LinkedList<>();
-
-        for (Long equipeId : equipes) {
-            Classement classement = new Classement();
-            AtomicInteger mj = new AtomicInteger(0); // Matches Joués
-            AtomicInteger mg = new AtomicInteger(0); // Matches Gagnés
-            AtomicInteger mp = new AtomicInteger(0); // Matches Perdus
-            AtomicInteger mn = new AtomicInteger(0); // Matches Nuls
-            AtomicInteger bm = new AtomicInteger(0); // Buts Marqués
-            AtomicInteger bc = new AtomicInteger(0); // Buts Encaissés
-            AtomicInteger ptsTotal = new AtomicInteger(0); // Points
-
-            // Récupération des données des points
-            pts.forEach(point -> {
-                if (point.idEquipe.equals(equipeId) && point.journee <= journee) {
-                    mj.incrementAndGet();
-                    bm.addAndGet(point.butMarque);
-                    bc.addAndGet(point.butEncaisse);
-                    ptsTotal.addAndGet(point.point);
-
-                    if (point.point == 3) mg.incrementAndGet(); // Victoire
-                    if (point.point == 1) mn.incrementAndGet(); // Match Nul
-                    if (point.point == 0) mp.incrementAndGet(); // Défaite
-                }
-            });
-
-            classement.idEquipe = equipeId;
-            classement.mj = mj.get(); // Matches Joués
-            classement.mg = mg.get(); // Matches Gagnés
-            classement.mp = mp.get(); // Matches Perdus
-            classement.mn = mn.get(); // Matches Nuls
-            classement.bm = bm.get(); // Buts Marqués
-            classement.bc = bc.get(); // Buts Encaissés
-            classement.diff = bm.get() - bc.get();  // Calcul de la différence de buts
-            classement.pts = ptsTotal.get(); // Points Total
-            classement.journee = journee; // Journée du match
-            classement.typeCompetition = typeCompetition; // Type de compétition
-
-            // Persister chaque classement dans la base de données
-            classement.persist();
-
-            // Log pour chaque équipe
-            System.out.println("Traitement de l'équipe: " + equipeId);
-            System.out.println("Matches Joués: " + mj.get());
-            System.out.println("Points Total: " + ptsTotal.get());
-        }
-
-        // Tri par points, puis par différence de buts
-        classements.sort((c1, c2) -> {
-            // Premier tri par points
-            int result = Integer.compare(c2.pts, c1.pts);
-            if (result == 0) {
-                // Si les points sont égaux, trier par différence de buts
-                result = Integer.compare(c2.diff, c1.diff);
-                if (result == 0) {
-                    // Si la différence de buts est aussi égale, trier par nombre de buts marqués
-                    result = Integer.compare(c2.bm, c1.bm);
-                }
-            }
-            return result;
-        });
-
-        return classements;
-    }
-
-    // Méthode pour obtenir les équipes à partir des points
-    private Set<Long> getEquipes(List<Point> tabs) {
-        Set<Long> equipes = new HashSet<>();
-        tabs.forEach((e) -> equipes.add(e.idEquipe));
-        return equipes;
-    }*/
-
 }
