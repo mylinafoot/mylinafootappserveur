@@ -1,20 +1,17 @@
 package controllers;
 
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.Point;
-import java.util.*;
 import models.Classement;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 @Path("/classement")
-
 public class ClassementController {
 
     @GET
-    @Path("classement")
+    @Path("/classement")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getClassement() {
         try {
@@ -25,29 +22,18 @@ public class ClassementController {
 
             // Parcourir les points et calculer le classement pour chaque saison, catégorie et journée
             for (Point point : points) {
-                String saison = point.saison; // Récupérer l'idSaison du point
+                String saison = point.saison; // Récupérer la saison du point
                 String categorie = point.categorie; // Récupérer la catégorie du point
                 int journee = point.journee; // Récupérer la journée du point
 
                 // Vérifier si le classement pour cette saison existe déjà
-                if (!classementParSaisonCategorieEtJournee.containsKey(saison)) {
-                    classementParSaisonCategorieEtJournee.put(saison, new HashMap<>());
-                }
+                classementParSaisonCategorieEtJournee
+                        .computeIfAbsent(saison, k -> new HashMap<>())
+                        .computeIfAbsent(categorie, k -> new HashMap<>())
+                        .computeIfAbsent(journee, k -> new ArrayList<>());
 
-                // Vérifier si le classement pour cette catégorie existe déjà dans la saison
-                Map<String, Map<Integer, List<Classement>>> classementParCategorieEtJournee = classementParSaisonCategorieEtJournee.get(saison);
-                if (!classementParCategorieEtJournee.containsKey(categorie)) {
-                    classementParCategorieEtJournee.put(categorie, new HashMap<>());
-                }
-
-                // Vérifier si le classement pour cette journée existe déjà dans la catégorie et la saison
-                Map<Integer, List<Classement>> classementParJournee = classementParCategorieEtJournee.get(categorie);
-                if (!classementParJournee.containsKey(journee)) {
-                    classementParJournee.put(journee, new ArrayList<>());
-                }
-
-                // Trouver ou créer le classement pour l'équipe dans la journée, la catégorie et la saison
-                List<Classement> classementJournee = classementParJournee.get(journee);
+                // Récupérer le classement pour la journée, la catégorie et la saison
+                List<Classement> classementJournee = classementParSaisonCategorieEtJournee.get(saison).get(categorie).get(journee);
                 Classement classement = findOrCreateClassement(classementJournee, point.equipe);
 
                 // Mettre à jour les statistiques du classement
@@ -59,36 +45,38 @@ public class ClassementController {
                 classement.butEncaisse += point.butEncaisse;
                 classement.differencebut += point.differencebut;
                 classement.point += point.point;
+
+                // Mettre à jour les champs supplémentaires
+                classement.journee = journee;  // Affectation de la journée correcte
+                classement.saison = saison;    // Affectation de la saison correcte
+                classement.categorie = categorie; // Affectation de la catégorie correcte
             }
 
-            // Trier le classement pour chaque journée, chaque catégorie et chaque saison
-            for (Map<String, Map<Integer, List<Classement>>> classementParCategorieEtJournee : classementParSaisonCategorieEtJournee.values()) {
-                for (Map<Integer, List<Classement>> classementParJournee : classementParCategorieEtJournee.values()) {
-                    for (List<Classement> classementJournee : classementParJournee.values()) {
-                        Collections.sort(classementJournee, new Comparator<Classement>() {
-                            @Override
-                            public int compare(Classement c1, Classement c2) {
-                                // 1. Plus de point
-                                if (c1.point != c2.point) {
-                                    return c2.point - c1.point;
-                                }
-                                // 2. Moins de Match perdu
-                                if (c1.matchperdu != c2.matchperdu) {
-                                    return c1.matchperdu - c2.matchperdu;
-                                }
-                                // 3. Plus de but marqués
-                                if (c1.butMarque != c2.butMarque) {
-                                    return c2.butMarque - c1.butMarque;
-                                }
-                                // 4. Plus de victoire en confrotation direct
-                                // (à implémenter si nécessaire)
-                                // 5. Les lettres alphabétiques en fonction des noms des équipes
-                                return c1.equipe.compareToIgnoreCase(c2.equipe);
+            // Trier le classement pour chaque journée, chaque catégorie et chaque saison, et assigner les `id`
+            classementParSaisonCategorieEtJournee.forEach((s, mapCategorie) -> {
+                mapCategorie.forEach((c, mapJournee) -> {
+                    mapJournee.forEach((j, listClassement) -> {
+                        // Trier le classement en fonction des critères
+                        listClassement.sort((c1, c2) -> {
+                            if (c1.point != c2.point) {
+                                return c2.point - c1.point;
                             }
+                            if (c1.matchperdu != c2.matchperdu) {
+                                return c1.matchperdu - c2.matchperdu;
+                            }
+                            if (c1.butMarque != c2.butMarque) {
+                                return c2.butMarque - c1.butMarque;
+                            }
+                            return c1.equipe.compareToIgnoreCase(c2.equipe);
                         });
-                    }
-                }
-            }
+
+                        // Attribuer les `id` en utilisant un Long pour chaque équipe dans le classement
+                        for (int i = 0; i < listClassement.size(); i++) {
+                            listClassement.get(i).id = (long) (i + 1); // ID en type Long commençant à 1
+                        }
+                    });
+                });
+            });
 
             // Retourner le classement par saison, catégorie et journée
             return Response.ok(classementParSaisonCategorieEtJournee).build();
@@ -127,23 +115,13 @@ public class ClassementController {
                     int journee = point.journee; // Récupérer la journée du point
 
                     // Vérifier si le classement pour cette catégorie existe déjà dans la saison
-                    if (!classementParSaisonCategorieEtJournee.containsKey(saison)) {
-                        classementParSaisonCategorieEtJournee.put(saison, new HashMap<>());
-                    }
+                    classementParSaisonCategorieEtJournee
+                            .computeIfAbsent(saison, k -> new HashMap<>())
+                            .computeIfAbsent(categorie, k -> new HashMap<>())
+                            .computeIfAbsent(journee, k -> new ArrayList<>());
 
-                    Map<String, Map<Integer, List<Classement>>> classementParCategorieEtJournee = classementParSaisonCategorieEtJournee.get(saison);
-                    if (!classementParCategorieEtJournee.containsKey(categorie)) {
-                        classementParCategorieEtJournee.put(categorie, new HashMap<>());
-                    }
-
-                    // Vérifier si le classement pour cette journée existe déjà dans la catégorie et la saison
-                    Map<Integer, List<Classement>> classementParJournee = classementParCategorieEtJournee.get(categorie);
-                    if (!classementParJournee.containsKey(journee)) {
-                        classementParJournee.put(journee, new ArrayList<>());
-                    }
-
-                    // Trouver ou créer le classement pour l'équipe dans la journée, la catégorie et la saison
-                    List<Classement> classementJournee = classementParJournee.get(journee);
+                    // Récupérer le classement pour la journée, la catégorie et la saison
+                    List<Classement> classementJournee = classementParSaisonCategorieEtJournee.get(saison).get(categorie).get(journee);
                     Classement classement = findOrCreateClassement(classementJournee, point.equipe);
 
                     // Mettre à jour les statistiques du classement
@@ -155,37 +133,39 @@ public class ClassementController {
                     classement.butEncaisse += point.butEncaisse;
                     classement.differencebut += point.differencebut;
                     classement.point += point.point;
+
+                    // Mettre à jour les champs supplémentaires
+                    classement.journee = journee;  // Affectation de la journée correcte
+                    classement.saison = saison;    // Affectation de la saison correcte
+                    classement.categorie = categorie; // Affectation de la catégorie correcte
                 }
             }
 
-            // Trier le classement pour chaque journée, chaque catégorie et chaque saison
-            for (Map<String, Map<Integer, List<Classement>>> classementParCategorieEtJournee : classementParSaisonCategorieEtJournee.values()) {
-                for (Map<Integer, List<Classement>> classementParJournee : classementParCategorieEtJournee.values()) {
-                    for (List<Classement> classementJournee : classementParJournee.values()) {
-                        Collections.sort(classementJournee, new Comparator<Classement>() {
-                            @Override
-                            public int compare(Classement c1, Classement c2) {
-                                // 1. Plus de point
-                                if (c1.point != c2.point) {
-                                    return c2.point - c1.point;
-                                }
-                                // 2. Moins de Match perdu
-                                if (c1.matchperdu != c2.matchperdu) {
-                                    return c1.matchperdu - c2.matchperdu;
-                                }
-                                // 3. Plus de but marqués
-                                if (c1.butMarque != c2.butMarque) {
-                                    return c2.butMarque - c1.butMarque;
-                                }
-                                // 4. Plus de victoire en confrotation direct
-                                // (à implémenter si nécessaire)
-                                // 5. Les lettres alphabétiques en fonction des noms des équipes
-                                return c1.equipe.compareToIgnoreCase(c2.equipe);
+            // Trier le classement pour chaque journée, chaque catégorie et chaque saison, et assigner les `id`
+            classementParSaisonCategorieEtJournee.forEach((s, mapCategorie) -> {
+                mapCategorie.forEach((c, mapJournee) -> {
+                    mapJournee.forEach((j, listClassement) -> {
+                        // Trier le classement en fonction des critères
+                        listClassement.sort((c1, c2) -> {
+                            if (c1.point != c2.point) {
+                                return c2.point - c1.point;
                             }
+                            if (c1.matchperdu != c2.matchperdu) {
+                                return c1.matchperdu - c2.matchperdu;
+                            }
+                            if (c1.butMarque != c2.butMarque) {
+                                return c2.butMarque - c1.butMarque;
+                            }
+                            return c1.equipe.compareToIgnoreCase(c2.equipe);
                         });
-                    }
-                }
-            }
+
+                        // Attribuer les `id` en utilisant un Long pour chaque équipe dans le classement
+                        for (int i = 0; i < listClassement.size(); i++) {
+                            listClassement.get(i).id = (long) (i + 1); // ID en type Long commençant à 1
+                        }
+                    });
+                });
+            });
 
             // Retourner le classement par saison, catégorie et journée
             return Response.ok(classementParSaisonCategorieEtJournee).build();
@@ -193,17 +173,5 @@ public class ClassementController {
             // Gestion des erreurs
             return Response.serverError().entity("Erreur lors de la récupération du classement : " + e.getMessage()).build();
         }
-    }
-
-    // Méthode pour trouver ou créer un classement pour une équipe dans une journée, une catégorie et une saison
-    private Classement findOrCreateClassementt(List<Classement> classementJournee, String equipe) {
-        for (Classement classement : classementJournee) {
-            if (classement.equipe.equals(equipe)) {
-                return classement;
-            }
-        }
-        Classement newClassement = new Classement(equipe);
-        classementJournee.add(newClassement);
-        return newClassement;
     }
 }
