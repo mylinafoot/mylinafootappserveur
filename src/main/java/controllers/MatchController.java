@@ -38,6 +38,7 @@ public class MatchController {
         return Response.ok(matchess).build();
     }*/
 
+
     @GET
     @Path("allaffiches/{idCalendrier}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,16 +47,17 @@ public class MatchController {
                                    @QueryParam("pageSize") @DefaultValue("3") int pageSize) {
         try {
             // 1. Fetch paginated data from your data source (e.g., database)
+            // Nous cherchons uniquement les matchs où 'afficher' est vrai
             List<Match> matches = Match.find("idCalendrier = ?1 and afficher = true", idCalendrier)
-                    .page(page - 1, pageSize) // Utilisez la méthode page() de PanacheQuery
+                    .page(page - 1, pageSize) // Utilisation de la pagination
                     .list();
 
-            // 2. Get total count of matches
+            // 2. Compter le nombre total de matches à afficher
             long totalCount = Match.count("idCalendrier = ?1 and afficher = true", idCalendrier);
 
-            // 3. Check if there are more matches to load
+            // 3. Vérifier si plus de matches peuvent être chargés
             if (matches.isEmpty() && page > 1) {
-                // If no matches are found and we are on a page greater than 1, it means we've reached the end
+                // Si aucun match n'est trouvé et que la page est supérieure à 1, il n'y a plus de données à charger
                 return Response.ok("Il n'y a plus de matches à charger.")
                         .header("X-Total-Count", totalCount)
                         .header("X-Page", page)
@@ -63,7 +65,7 @@ public class MatchController {
                         .build();
             }
 
-            // 4. Create a response object with pagination metadata
+            // 4. Créer une réponse avec les métadonnées de pagination
             return Response.ok(matches)
                     .header("X-Total-Count", totalCount)
                     .header("X-Page", page)
@@ -73,6 +75,7 @@ public class MatchController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     //
     @GET
     @Path("all")

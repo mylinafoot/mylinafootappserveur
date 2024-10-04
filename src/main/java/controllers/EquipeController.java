@@ -36,6 +36,39 @@ public class EquipeController {
         });
         return Response.ok(eqs).build();
     }
+
+    @GET
+    @Path("All/afficher")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllEquipeAfficher(@QueryParam("page") @DefaultValue("1") int page,
+                                         @QueryParam("pageSize") @DefaultValue("5") int pageSize) {
+        try {
+            // 1. Fetch paginated data from your data source (e.g., database)
+            List<Equipe> equipes = Equipe.findAll().page(page - 1, pageSize).list(); // Pagination
+
+            // 2. Get total count of equipes
+            long totalCount = Equipe.count();
+
+            // 3. Clear logos for all equipes in this page to save memory
+            List<Equipe> eqs = new LinkedList<>();
+            equipes.forEach((equipe) -> {
+                equipe.logo = new byte[0];  // Clear logo data
+                eqs.add(equipe);
+            });
+
+            // 4. Create a response object with pagination metadata
+            return Response.ok(eqs)
+                    .header("X-Total-Count", totalCount)  // Total number of equipes
+                    .header("X-Page", page)               // Current page
+                    .header("X-Page-Size", pageSize)      // Page size (number of items per page)
+                    .build();
+
+        } catch (Exception e) {
+            // Handle any errors that may occur
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Erreur lors de la récupération des équipes.").build();
+        }
+    }
+
     //
     @POST
     @Produces(MediaType.APPLICATION_JSON)

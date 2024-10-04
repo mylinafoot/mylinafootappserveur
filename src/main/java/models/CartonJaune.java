@@ -1,10 +1,9 @@
 package models;
-
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 
 @Entity
-public class Carton extends PanacheEntity {
+public class CartonJaune extends PanacheEntity {
     public String saison;
     public String categorie;
     public int journe;
@@ -19,6 +18,4 @@ public class Carton extends PanacheEntity {
     public int dossardJoueurEqB;
     public String Typecarton;
     public String raison;
-
-
 }
