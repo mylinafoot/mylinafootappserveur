@@ -12,6 +12,7 @@ import models.Match;
 import models.Point;
 import models.Joueur;
 import models.Carton;
+import  models.CartonJaune;
 import models.rapport.Rapport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class RapportController {
     @Path("rapport")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRapport(@QueryParam("idCalendrier") Long idCalendrier,
-                                            @QueryParam("typeRapport") int typeRapport, @QueryParam("idMatch") Long idMatch) {
+                               @QueryParam("typeRapport") int typeRapport, @QueryParam("idMatch") Long idMatch) {
 
         System.out.println("idCalendrier: "+idCalendrier+" -- typeRapport: "+typeRapport);
         HashMap params = new HashMap();
@@ -145,6 +146,7 @@ public class RapportController {
                     String rapText = obj.writeValueAsString(rapporte);
                     //
                     JsonNode jsonNode = obj.readTree(rapText);
+
                     //
                     int scoreEqA = jsonNode.get("scoreFin").get("a").asInt();
 
@@ -164,12 +166,12 @@ public class RapportController {
                     String cartonrougeEqB = jsonNode.get("expulssionsJoueursGeneralB").get("b").asText();
                     System.out.println("cartonRougeB: "+jsonNode.get("expulssionsJoueursGeneralB").get("b"));
 
-                    String joueurEqA = jsonNode.get("joueurEqupeA").get("a").asText();
-                    System.out.println("joueurEqupeA: "+jsonNode.get("joueurEqupeA").get("a"));
+                    String joueurEqA = jsonNode.get("joueurEqupeA").asText();
+                    System.out.println("joueurEqupeA: "+jsonNode.get("joueurEqupeA"));
 
 
                     String joueurEqB = jsonNode.get("joueurEqupeB").get("b").asText();
-                    System.out.println("joueurEqupeB: "+jsonNode.get("joueurEqupeB").get("a"));
+                    System.out.println("joueurEqupeB: "+jsonNode.get("joueurEqupeB"));
 
                     int scoreEqB = jsonNode.get("scoreFin").get("b").asInt();
 
@@ -209,15 +211,119 @@ public class RapportController {
                     pointEquipeA.differencebut = scoreEqB - scoreEqA;
                     pointEquipeB.persist();
 
-                    //Carton persistance
 
-                    /*Carton cartonjoueur= new Carton();
-                    cartonjoueur.idjoueur=rapport.idjoueur;
-                    cartonjoueur.idMatch=rapport.idMatch;
-                    cartonjoueur.raison= rapport.raison;
-                    cartonjoueur.typecarton= rapport.typecarton;
+                    JsonNode expulsionJoueurEqA = jsonNode.get("expulsionsJoueursGeneralA").get(0);
+                    // Accéder aux détails du joueur
+                    JsonNode joueureqAexpulNode = expulsionJoueurEqA.get("joueur");
 
-                    cartonjoueur.persist();*/
+                    // Récupération des informations du joueur
+                    int joueureqAexpulId = joueureqAexpulNode.get("id").asInt();
+                    String nomjoueureqAexpul = joueureqAexpulNode.get("nom").asText();
+                    String prenomJoueureqAexpul = joueureqAexpulNode.get("prenom").asText();
+                    int dossardJoueureqAexpul = joueureqAexpulNode.get("numero").asInt();
+                    String cartonRougeJoueureqAexpul = "Rouge"; // Type de carton
+                    String raisonjoueureqAexpul = expulsionJoueurEqA.get("note").asText();
+                    System.out.println("Id"+ joueureqAexpulId +"Nom Joueur EqA expulsé : " + nomjoueureqAexpul + "Prenom Joueur EqA expulsé : " + prenomJoueureqAexpul + ", Raison : " + raisonjoueureqAexpul + "dossard :"+ dossardJoueureqAexpul + "carton :" + cartonRougeJoueureqAexpul);
+
+                    Carton cartonjoueurRougeEqA= new Carton();
+
+                    cartonjoueurRougeEqA.saison=rapport.saison;
+                    cartonjoueurRougeEqA.categorie=rapport.categorie;
+                    cartonjoueurRougeEqA.journe= rapport.journee;
+                    cartonjoueurRougeEqA.idJoueurEqA=joueureqAexpulId;
+                    cartonjoueurRougeEqA.NomJoueurEqA=nomjoueureqAexpul;
+                    cartonjoueurRougeEqA.PrenomJoueurEqA=prenomJoueureqAexpul;
+                    cartonjoueurRougeEqA.dossardJoueurEqA=dossardJoueureqAexpul;
+                    cartonjoueurRougeEqA.Typecarton=cartonRougeJoueureqAexpul;
+                    cartonjoueurRougeEqA.raison=raisonjoueureqAexpul;
+                    // Traitez les données comme nécessaire
+
+                    cartonjoueurRougeEqA.persist();
+
+                    JsonNode expulsionJoueurEqB = jsonNode.get("expulsionsJoueursGeneralB").get(0);
+                    // Accéder aux détails du joueur
+                    JsonNode joueureqBexpulNode = expulsionJoueurEqB.get("joueur");
+
+                    // Récupération des informations du joueur
+                    int joueureqBexpulId = joueureqBexpulNode.get("id").asInt();
+                    String nomjoueureqBexpul = joueureqBexpulNode.get("nom").asText();
+                    String prenomJoueureqBexpul = joueureqBexpulNode.get("prenom").asText();
+                    int dossardJoueureqBexpul = joueureqBexpulNode.get("numero").asInt();
+                    String cartonRougeJoueureqBexpul = "Rouge"; // Type de carton
+                    String raisonjoueureqBexpul = expulsionJoueurEqB.get("note").asText();
+                    System.out.println("Id"+ joueureqBexpulId +"Nom Joueur EqB expulsé : " + nomjoueureqBexpul + "Prenom Joueur EqB expulsé : " + prenomJoueureqBexpul + ", Raison : " + raisonjoueureqBexpul + "dossard :"+ dossardJoueureqBexpul + "carton :" + cartonRougeJoueureqBexpul);
+
+                    Carton cartonjoueurRougeEqB= new Carton();
+
+                    cartonjoueurRougeEqB.saison=rapport.saison;
+                    cartonjoueurRougeEqB.categorie=rapport.categorie;
+                    cartonjoueurRougeEqB.journe= rapport.journee;
+                    cartonjoueurRougeEqB.idJoueurEqB=joueureqBexpulId;
+                    cartonjoueurRougeEqB.NomJoueurEqB=nomjoueureqBexpul;
+                    cartonjoueurRougeEqB.PrenomJoueurEqB=prenomJoueureqBexpul;
+                    cartonjoueurRougeEqB.dossardJoueurEqB=dossardJoueureqBexpul;
+                    cartonjoueurRougeEqB.Typecarton=cartonRougeJoueureqBexpul;
+                    cartonjoueurRougeEqB.raison=raisonjoueureqBexpul;
+                    // Traitez les données comme nécessaire
+                    cartonjoueurRougeEqB.persist();
+
+
+                    JsonNode averstJoueurEqA = jsonNode.get("avertissementsJoueursGeneralA").get(0);
+                    // Accéder aux détails du joueur
+                    JsonNode AvertisseJoueurEqANode = averstJoueurEqA.get("joueur");
+
+                    // Récupération des informations du joueur
+                    int joueureqAavertisId = AvertisseJoueurEqANode.get("id").asInt();
+                    String nomjoueureqAavertis = AvertisseJoueurEqANode.get("nom").asText();
+                    String prenomjoueureqAavertis = AvertisseJoueurEqANode.get("prenom").asText();
+                    int dossardjoueureqAavertis = AvertisseJoueurEqANode.get("numero").asInt();
+                    String cartonJaunejoueureqAavertis = "Jaune"; // Type de carton
+                    String raisonjoueureqAavertis = averstJoueurEqA.get("note").asText();
+                    System.out.println("Id :"+ joueureqAavertisId +"Nom Joueur EqA avertis : " + nomjoueureqAavertis + "Prenom Joueur EqA avertis : " + prenomjoueureqAavertis + ", RaisonA avertis: " + raisonjoueureqAavertis + "dossardA avertis:"+ dossardjoueureqAavertis + "cartonA avertis:" + cartonJaunejoueureqAavertis);
+
+                    CartonJaune cartonjoueurJauneEqA= new CartonJaune();
+
+                    cartonjoueurJauneEqA.saison=rapport.saison;
+                    cartonjoueurJauneEqA.categorie=rapport.categorie;
+                    cartonjoueurJauneEqA.journe= rapport.journee;
+                    cartonjoueurJauneEqA.idJoueurEqA=joueureqAavertisId;
+                    cartonjoueurJauneEqA.NomJoueurEqA=nomjoueureqAavertis;
+                    cartonjoueurJauneEqA.PrenomJoueurEqA=prenomjoueureqAavertis;
+                    cartonjoueurJauneEqA.dossardJoueurEqA=dossardjoueureqAavertis;
+                    cartonjoueurJauneEqA.Typecarton=cartonJaunejoueureqAavertis;
+                    cartonjoueurJauneEqA.raison=raisonjoueureqAavertis;
+                    // Traitez les données comme nécessaire
+                    cartonjoueurJauneEqA.persist();
+
+
+                    JsonNode averstJoueurEqB = jsonNode.get("avertissementsJoueursGeneralB").get(0);
+                    // Accéder aux détails du joueur
+                    JsonNode AvertisseJoueurEqBNode = averstJoueurEqB.get("joueur");
+
+                    // Récupération des informations du joueur
+                    int joueureqBavertisId = AvertisseJoueurEqBNode.get("id").asInt();
+                    String nomjoueureqBavertis = AvertisseJoueurEqBNode.get("nom").asText();
+                    String prenomjoueureqBavertis = AvertisseJoueurEqBNode.get("prenom").asText();
+                    int dossardjoueureqBavertis = AvertisseJoueurEqBNode.get("numero").asInt();
+                    String cartonJaunejoueureqBavertis = "Jaune"; // Type de carton
+                    String raisonjoueureqBavertis = averstJoueurEqB.get("note").asText();
+
+                    CartonJaune cartonjoueurJauneEqB= new CartonJaune();
+
+                    cartonjoueurJauneEqB.saison=rapport.saison;
+                    cartonjoueurJauneEqB.categorie=rapport.categorie;
+                    cartonjoueurJauneEqB.journe= rapport.journee;
+                    cartonjoueurJauneEqB.idJoueurEqB=joueureqBavertisId;
+                    cartonjoueurJauneEqB.NomJoueurEqB=nomjoueureqBavertis;
+                    cartonjoueurJauneEqB.PrenomJoueurEqB=prenomjoueureqBavertis;
+                    cartonjoueurJauneEqB.dossardJoueurEqB=dossardjoueureqBavertis;
+                    cartonjoueurJauneEqB.Typecarton=cartonJaunejoueureqBavertis;
+                    cartonjoueurJauneEqB.raison=raisonjoueureqBavertis;
+                    // Traitez les données comme nécessaire
+                    cartonjoueurJauneEqB.persist();
+
+
+
                     //CARTON
                     /*Carton cartonjoeur = new Carton();
                     //cartonjoeur.idJoueur = rapport.jo;
@@ -336,4 +442,5 @@ public class RapportController {
         Rapport.deleteById(id);
         return Response.ok().build();
     }
+
 }

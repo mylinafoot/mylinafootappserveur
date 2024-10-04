@@ -8,7 +8,7 @@ import models.Carton;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Path("/carton")
+/*@Path("/carton")
 public class CartonController {
     @GET
     @Path("jaune")
@@ -28,3 +28,4 @@ public class CartonController {
         return Response.ok(yellowCardsByPlayer).build();
     }
 }
+*/
